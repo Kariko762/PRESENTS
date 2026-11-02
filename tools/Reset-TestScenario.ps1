@@ -19,8 +19,16 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $root = Resolve-Path (Join-Path $PSScriptRoot '..')
-$tool = Join-Path $root 'tools\DemoRepositoryTool\bin\Debug\net10.0-windows\DemoRepositoryTool.exe'
 $settings = Join-Path $env:LOCALAPPDATA 'FISPresents\Settings'
+# Release zip layout: Tools\Reset-TestScenario.ps1 beside Tools\DemoRepositoryTool\DemoRepositoryTool.exe (samples bundled with it).
+$releaseTool = Join-Path $PSScriptRoot 'DemoRepositoryTool\DemoRepositoryTool.exe'
+if (Test-Path $releaseTool) {
+    $tool = $releaseTool
+    $samples = Join-Path $PSScriptRoot 'DemoRepositoryTool\samples\Demos'
+} else {
+    $tool = Join-Path $root 'tools\DemoRepositoryTool\bin\Debug\net10.0-windows\DemoRepositoryTool.exe'
+    $samples = Join-Path $root 'samples\Demos'
+}
 
 if (Get-Process FisPresentationPlatform -ErrorAction SilentlyContinue) { throw 'Close FIS Presentation Studio first.' }
 if (-not (Test-Path $tool)) {
@@ -51,8 +59,8 @@ Invoke-Tool release $Repository DigitalAdvantage 1.1.0 'Test update: updated imp
 
 $template = Join-Path $TestRoot 'TemplateDemo'
 Remove-Item $template -Recurse -Force -ErrorAction SilentlyContinue
-Copy-Item (Join-Path $root 'samples\Demos\Template') $template -Recurse
-Copy-Item (Join-Path $root 'samples\Demos\shared') (Join-Path $template 'shared') -Recurse
+Copy-Item (Join-Path $samples 'Template') $template -Recurse
+Copy-Item (Join-Path $samples 'shared') (Join-Path $template 'shared') -Recurse
 
 Write-Host ''
 Invoke-Tool list $Repository
