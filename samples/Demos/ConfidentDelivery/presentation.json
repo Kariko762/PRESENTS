@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "id": "fis-confident-delivery",
+  "name": "Confident, Repeatable Delivery",
+  "description": "Demo 3 of 3 · How pre-sales consultants put digital content to work. Prepare, rehearse, deliver and improve a trade lifecycle story the same way, every time.",
+  "version": "1.0.0",
+  "entryPoint": "index.html",
+  "branding": {
+    "accentColor": "#C6E65B",
+    "logo": "shared/fis-logo.png"
+  },
+  "catalog": {
+    "product": "Trade Lifecycle Manager",
+    "functions": [
+      "Consultant enablement",
+      "Repeatable delivery"
+    ],
+    "tags": [
+      "Story 3 of 3",
+      "Branded",
+      "Presenter cues"
+    ],
+    "coverImage": "",
+    "organization": {
+      "l3": "Capital Markets",
+      "l4": "Trading & Processing",
+      "l5": "Post-Trade",
+      "l6": "Clearing & Settlement",
+      "l7": "Trade Lifecycle",
+      "l8": "Trade Lifecycle Manager"
+    }
+  },
+  "navigation": {
+    "enabled": true,
+    "sections": [
+      {
+        "id": "story",
+        "title": "Confident, Repeatable Delivery",
+        "pages": [
+          {
+            "id": "opening",
+            "title": "Confident delivery",
+            "path": "index.html"
+          },
+          {
+            "id": "prepare",
+            "title": "Prepare",
+            "path": "prepare.html"
+          },
+          {
+            "id": "rehearse",
+            "title": "Rehearse",
+            "path": "rehearse.html"
+          },
+          {
+            "id": "deliver",
+            "title": "Deliver",
+            "path": "deliver.html"
+          },
+          {
+            "id": "improve",
+            "title": "Repeat and improve",
+            "path": "improve.html"
+          },
+          {
+            "id": "story",
+            "title": "The whole story",
+            "path": "summary.html"
+          }
+        ]
+      }
+    ]
+  },
+  "dataSets": [
+    {
+      "id": "broker-dealer",
+      "name": "Global broker-dealer",
+      "persona": "Head of Operations",
+      "description": "Equity trade with a price-tolerance break at matching.",
+      "file": "data/broker-dealer.json",
+      "default": true
+    },
+    {
+      "id": "asset-manager",
+      "name": "Asset manager",
+      "persona": "COO, Investment Operations",
+      "description": "Treasury bond sale from a fixed-income fund.",
+      "file": "data/asset-manager.json",
+      "default": false
+    },
+    {
+      "id": "custodian",
+      "name": "Global custodian",
+      "persona": "Head of Settlements",
+      "description": "Client equity purchase settled on behalf of a fund.",
+      "file": "data/custodian.json",
+      "default": false
+    }
+  ]
+}

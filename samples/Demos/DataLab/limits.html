@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Limits lab</title>
+<link rel="stylesheet" href="shared/brand.css">
+<link rel="stylesheet" href="lab.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<script defer src="lab.js"></script>
+<style>
+  .grid-limits { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; flex: 1; min-height: 0; }
+  .grid-limits .card { display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow: auto; padding: 14px 16px; }
+  .grid-limits .card > * { flex-shrink: 0; }
+  .bench { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .bench th { text-align: left; font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .06em; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  .bench td { padding: 7px 8px; border-bottom: 1px solid #22344a; }
+  .bench td:not(:first-child) { text-align: right; }
+  .gauge { position: relative; height: 14px; border-radius: 7px; background: linear-gradient(90deg, #2c6b47 0 25%, #6b5a2c 25% 100%); overflow: hidden; }
+  .gauge i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 7px; width: 0; transition: width 1s var(--ease); }
+  .gauge-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--dim); }
+  .bar { display: inline-block; height: 8px; border-radius: 4px; background: var(--accent); vertical-align: middle; margin-left: 8px; }
+  .bar.slow { background: #ffc45c; } .bar.bad { background: #ff8b7d; }
+  #sandbox { position: absolute; left: -99999px; top: 0; width: 900px; visibility: hidden; }
+</style>
+</head>
+<body data-demo="Data Lab" data-chapter="Limits lab" data-page="8" data-pages="8" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="lab-head">
+    <div><p class="eyebrow reveal">Measured on this machine, with this data set</p><h2 class="reveal">How much data is too much?</h2></div>
+    <div class="row reveal"><button class="button" id="run">Run benchmarks</button><div data-lab-status></div></div>
+  </div>
+  <div class="grid-limits reveal">
+    <div class="card">
+      <p class="eyebrow">Inline data · injected into every page</p>
+      <div class="gauge"><i id="gauge"></i></div>
+      <div class="gauge-scale"><span>0</span><span>256 KB recommended</span><span>512 KB</span><span>1 MB hard limit</span></div>
+      <table class="bench"><tbody id="inline"></tbody></table>
+      <p class="eyebrow" style="margin-top:6px">Rule of thumb</p>
+      <table class="bench">
+        <thead><tr><th>Shape</th><th>Store it as</th><th>Comfortable up to</th></tr></thead>
+        <tbody>
+          <tr><td>Headline values, KPIs, names</td><td>Inline JSON</td><td>Any</td></tr>
+          <tr><td>Rows shown on a page (blotter)</td><td>Inline JSON array</td><td>~2,000 rows</td></tr>
+          <tr><td>Charts</td><td>Columnar arrays</td><td>~5,000 points</td></tr>
+          <tr><td>History, audit, bulk rows</td><td>"$files" CSV</td><td>~100k rows</td></tr>
+          <tr><td>Variations of a client</td><td>"$extends" override</td><td>4 files in a chain</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Rendering · full table DOM, no pagination</p>
+      <table class="bench"><thead><tr><th>Rows</th><th>Build</th><th>Layout</th><th></th></tr></thead><tbody id="render"><tr><td colspan="4" class="small">Press "Run benchmarks".</td></tr></tbody></table>
+      <p class="eyebrow" style="margin-top:6px">Lazy files · fetch + parse</p>
+      <table class="bench"><thead><tr><th>File</th><th>Size</th><th>Rows</th><th>Fetch</th><th>Parse</th></tr></thead><tbody id="files"><tr><td colspan="5" class="small">Press "Run benchmarks".</td></tr></tbody></table>
+      <p class="small">FISDeck.table paginates, so only one page of rows is ever in the DOM — the full-DOM numbers above are the worst case for a hand-written table.</p>
+    </div>
+  </div>
+  <div id="sandbox"></div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { deck, el, kb } = Lab;
+  Lab.status();
+  const f = deck.format;
+  const data = deck.context.data || {};
+  const ms = value => `${value.toFixed(value < 10 ? 1 : 0)} ms`;
+  const barClass = value => value > 250 ? 'bad' : value > 60 ? 'slow' : '';
+
+  const started = performance.now();
+  const text = JSON.stringify(data);
+  const stringifyMs = performance.now() - started;
+  const parseStart = performance.now();
+  JSON.parse(text);
+  const parseMs = performance.now() - parseStart;
+  const bytes = deck.context.dataBytes || new Blob([text]).size;
+  const arrays = [];
+  (function walk(value, path) {
+    if (Array.isArray(value)) { arrays.push([path, value.length]); value.slice(0, 1).forEach(item => walk(item, `${path}[]`)); }
+    else if (value && typeof value === 'object') Object.entries(value).forEach(([key, child]) => walk(child, path ? `${path}.${key}` : key));
+  })(data, '');
+  const largest = arrays.sort((a, b) => b[1] - a[1]).slice(0, 4);
+  document.getElementById('inline').replaceChildren(
+    ...[['Size', kb(bytes)], ['Share of 1 MB', f.percent(bytes / 1048576)], ['JSON.stringify', ms(stringifyMs)], ['JSON.parse (per page)', ms(parseMs)],
+      ...largest.map(([path, count]) => [`Rows in ${path}`, f.number(count)])]
+      .map(([k, v]) => el('tr', {}, el('td', { text: k }), el('td', { text: v }))));
+  setTimeout(() => document.getElementById('gauge').style.width = `${Math.min(100, bytes / 1048576 * 100)}%`, 300);
+
+  async function run() {
+    const button = document.getElementById('run');
+    button.disabled = true; button.textContent = 'Running…';
+    const sandbox = document.getElementById('sandbox');
+    const source = deck.rows('trades');
+    const sizes = [100, 1000, 5000, 10000];
+    const body = document.getElementById('render');
+    body.replaceChildren();
+    for (const size of sizes) {
+      await new Promise(r => setTimeout(r, 30));
+      const rows = source.length ? Array.from({ length: size }, (_, i) => source[i % source.length]) : Array.from({ length: size }, (_, i) => ({ id: `T${i}`, notional: i }));
+      const keys = Object.keys(rows[0]).slice(0, 10);
+      const t0 = performance.now();
+      const table = document.createElement('table');
+      const tbody = table.createTBody();
+      for (const row of rows) { const tr = tbody.insertRow(); for (const key of keys) tr.insertCell().textContent = row[key] ?? ''; }
+      sandbox.replaceChildren(table);
+      const t1 = performance.now();
+      void sandbox.offsetHeight;
+      const t2 = performance.now();
+      sandbox.replaceChildren();
+      const total = t2 - t0;
+      body.append(el('tr', {}, el('td', { text: f.number(size) }), el('td', { text: ms(t1 - t0) }), el('td', { text: ms(t2 - t1) }),
+        el('td', {}, el('span', { class: `bar ${barClass(total)}`, style: `width:${Math.min(120, total / 4 + 4)}px` }))));
+    }
+    const filesBody = document.getElementById('files');
+    const names = Object.keys(deck.context.files || {});
+    if (!names.length) filesBody.replaceChildren(el('tr', {}, el('td', { colspan: 5, class: 'small', text: 'This data set declares no "$files".' })));
+    else {
+      filesBody.replaceChildren();
+      for (const name of names) {
+        try {
+          const rows = await deck.load(name);
+          const t = deck.timings.filter(x => x.name === name).pop() || {};
+          filesBody.append(el('tr', {}, el('td', { text: name }), el('td', { text: kb(t.bytes || 0) }), el('td', { text: Array.isArray(rows) ? f.number(rows.length) : '—' }), el('td', { text: ms(t.fetchMs || 0) }), el('td', { text: ms(t.parseMs || 0) })));
+        } catch (error) {
+          filesBody.append(el('tr', {}, el('td', { text: name }), el('td', { colspan: 4, class: 'neg', text: error.message })));
+        }
+      }
+    }
+    button.disabled = false; button.textContent = 'Run again';
+  }
+  document.getElementById('run').addEventListener('click', run);
+});
+</script>
+</body>
+</html>

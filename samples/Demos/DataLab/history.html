@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>History file</title>
+<link rel="stylesheet" href="shared/brand.css">
+<link rel="stylesheet" href="lab.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<script defer src="lab.js"></script>
+<style>
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .stats .card { padding: 12px 14px; }
+  .stats b { display: block; font-size: 22px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .body { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; flex: 1; min-height: 0; }
+  .body .card { display: flex; flex-direction: column; min-height: 0; padding: 12px 14px; }
+  #months { flex: 1; min-height: 0; }
+  #history { flex: 1; min-height: 0; }
+  #history .fis-table-scroll { flex: 1; }
+  .loading { display: flex; align-items: center; gap: 10px; color: var(--muted); }
+  .spinner { width: 18px; height: 18px; border: 2px solid #2c4256; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body data-demo="Data Lab" data-chapter="History file" data-page="7" data-pages="8" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="lab-head">
+    <div><p class="eyebrow reveal">Lazy file · "$files" → CSV fetched only when this page opens</p><h2 class="reveal">Two years of trades, loaded on demand.</h2></div>
+    <div data-lab-status class="reveal"></div>
+  </div>
+  <div class="stats reveal">
+    <div class="card"><p class="eyebrow">File</p><b id="h-file" class="mono" style="font-size:13px;word-break:break-all">—</b></div>
+    <div class="card"><p class="eyebrow">Size</p><b id="h-size">—</b></div>
+    <div class="card"><p class="eyebrow">Rows</p><b id="h-rows">—</b></div>
+    <div class="card"><p class="eyebrow">Fetch</p><b id="h-fetch">—</b></div>
+    <div class="card"><p class="eyebrow">Parse</p><b id="h-parse">—</b></div>
+  </div>
+  <div class="body reveal">
+    <div class="card"><div class="lab-head"><p class="eyebrow">Notional by month</p><div class="segmented" id="measure"><button data-m="notional" aria-pressed="true">Notional</button><button data-m="count" aria-pressed="false">Trades</button></div></div><div id="months"><div class="loading"><span class="spinner"></span>Loading history…</div></div></div>
+    <div class="card"><div id="history" class="lab-fill"></div></div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { deck, kb } = Lab;
+  Lab.status();
+  const f = deck.format;
+  const files = deck.context.files || {};
+  const set = (id, text) => document.getElementById(id).textContent = text;
+  if (!files.history) {
+    document.getElementById('months').innerHTML = '';
+    document.getElementById('months').append(Lab.el('p', { class: 'callout', text: 'This data set has no "$files.history" entry, so there is nothing to load. Pick the Tier 1 bank or Stress test data set to see a lazily loaded CSV.' }));
+    deck.table(document.getElementById('history'), [], [{ key: 'id', label: 'Trade' }], { empty: 'No history file.' });
+    return;
+  }
+  set('h-file', files.history);
+  deck.load('history').then(rows => {
+    const timing = deck.timings.find(t => t.name === 'history') || {};
+    set('h-size', kb(timing.bytes || 0)); set('h-rows', f.number(rows.length));
+    set('h-fetch', `${(timing.fetchMs || 0).toFixed(0)} ms`); set('h-parse', `${(timing.parseMs || 0).toFixed(0)} ms`);
+
+    const months = new Map();
+    rows.forEach(row => {
+      const key = String(row.tradeDate || '').slice(0, 7);
+      if (!key) return;
+      const bucket = months.get(key) || { notional: 0, count: 0 };
+      bucket.notional += Math.abs(Number(row.notional) || 0); bucket.count++;
+      months.set(key, bucket);
+    });
+    const ordered = [...months.entries()].sort(([a], [b]) => a.localeCompare(b));
+    let measure = 'notional';
+    const draw = () => Lab.bars(document.getElementById('months'), ordered.map(([label, v]) => ({ label: label.slice(2), value: v[measure] })),
+      { format: measure === 'count' ? v => f.compact(v) : v => f.money(v, { compact: true }) });
+    draw();
+    document.querySelectorAll('#measure button').forEach(button => button.addEventListener('click', () => {
+      measure = button.dataset.m;
+      document.querySelectorAll('#measure button').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+      draw();
+    }));
+    let timer; addEventListener('resize', () => { clearTimeout(timer); timer = setTimeout(draw, 150); });
+
+    deck.table(document.getElementById('history'), rows, [
+      { key: 'id', label: 'Trade' },
+      { key: 'tradeDate', label: 'Date', format: 'date' },
+      { key: 'side', label: 'Side', className: v => v === 'BUY' ? 'pos' : 'neg' },
+      { key: 'instrument', label: 'Instrument' },
+      { key: 'notional', label: 'Notional', align: 'right', format: v => f.money(v, { compact: true }) },
+      { key: 'status', label: 'Status' }
+    ], { pageSize: Lab.fitRows(document.getElementById('history')), placeholder: `Search ${f.number(rows.length)} rows…` });
+  }).catch(error => {
+    document.getElementById('months').replaceChildren(Lab.el('div', { class: 'lab-banner error', text: `Could not load ${files.history}: ${error.message}` }));
+  });
+});
+</script>
+</body>
+</html>

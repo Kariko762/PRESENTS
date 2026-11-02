@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Time series</title>
+<link rel="stylesheet" href="shared/brand.css">
+<link rel="stylesheet" href="lab.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<script defer src="lab.js"></script>
+<style>
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .stats .card { padding: 12px 14px; }
+  .stats b { display: block; font-size: 22px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .charts { display: grid; grid-template-rows: 1.6fr 1fr; gap: 14px; flex: 1; min-height: 0; }
+  .charts .card { display: flex; flex-direction: column; min-height: 0; padding: 12px 14px; }
+  .plot { flex: 1; min-height: 0; }
+</style>
+</head>
+<body data-demo="Data Lab" data-chapter="Time series" data-page="5" data-pages="8" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="lab-head">
+    <div><p class="eyebrow reveal">Columnar series · one array per measure, sharing a dates array</p><h2 class="reveal">P&amp;L, risk and volume over time.</h2></div>
+    <div class="row reveal"><div class="segmented" id="range"></div><div data-lab-status></div></div>
+  </div>
+  <div class="stats reveal">
+    <div class="card"><p class="eyebrow">Points shown</p><b id="s-points">—</b></div>
+    <div class="card"><p class="eyebrow">Cumulative P&amp;L</p><b id="s-pnl">—</b></div>
+    <div class="card"><p class="eyebrow">Best day</p><b id="s-best">—</b></div>
+    <div class="card"><p class="eyebrow">Peak VaR</p><b id="s-var">—</b></div>
+    <div class="card"><p class="eyebrow">Render time</p><b id="s-render">—</b></div>
+  </div>
+  <div class="charts reveal">
+    <div class="card"><div class="lab-head"><p class="eyebrow">Daily P&amp;L vs 99% VaR</p><div class="legend"><span><i style="background:#4bcd3e"></i>P&amp;L</span><span><i style="background:#ffc45c"></i>VaR</span></div></div><div class="plot" id="pnl"></div></div>
+    <div class="card"><p class="eyebrow">Traded volume</p><div class="plot" id="volume"></div></div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { deck, el } = Lab;
+  Lab.status();
+  const f = deck.format;
+  const series = deck.data('series', {}) || {};
+  const dates = series.dates || [];
+  const ranges = [['1M', 22], ['3M', 66], ['6M', 130], ['1Y', 260], ['All', Infinity]].filter(([, n], i, list) => n === Infinity || n < dates.length || i === 0);
+  let current = ranges.find(([label]) => label === '6M') || ranges[ranges.length - 1];
+
+  function render() {
+    const started = performance.now();
+    const count = Math.min(dates.length, current[1]);
+    const from = dates.length - count;
+    const slice = key => (series[key] || []).slice(from);
+    const xs = dates.slice(from), pnl = slice('pnl'), risk = slice('var'), volume = slice('volume');
+    const shortDate = value => f.date(value, 'short');
+    Lab.lineChart(document.getElementById('pnl'), xs, [
+      { label: 'P&L', values: pnl, color: '#4bcd3e', area: true },
+      { label: 'VaR', values: risk, color: '#ffc45c' }
+    ], { format: v => f.money(v, { compact: true }), xFormat: shortDate });
+    const bucket = Math.max(1, Math.ceil(xs.length / 60));
+    const buckets = [];
+    for (let i = 0; i < xs.length; i += bucket) buckets.push({ label: shortDate(xs[i]), value: volume.slice(i, i + bucket).reduce((t, v) => t + (Number(v) || 0), 0) });
+    Lab.bars(document.getElementById('volume'), buckets, { color: '#43cebd' });
+    const finite = pnl.filter(Number.isFinite);
+    document.getElementById('s-points').textContent = f.number(xs.length * 3);
+    document.getElementById('s-pnl').textContent = finite.length ? f.money(finite.reduce((a, b) => a + b, 0), { compact: true }) : '—';
+    document.getElementById('s-best').textContent = finite.length ? f.money(Math.max(...finite), { compact: true }) : '—';
+    document.getElementById('s-var').textContent = risk.length ? f.money(Math.max(...risk.filter(Number.isFinite)), { compact: true }) : '—';
+    document.getElementById('s-render').textContent = `${(performance.now() - started).toFixed(1)} ms`;
+  }
+  const buttons = ranges.map(range => {
+    const button = el('button', { 'aria-pressed': String(range === current), text: range[0] });
+    button.addEventListener('click', () => { current = range; buttons.forEach(b => b.setAttribute('aria-pressed', String(b === button))); render(); });
+    return button;
+  });
+  document.getElementById('range').replaceChildren(...buttons);
+  requestAnimationFrame(render);
+  let timer; addEventListener('resize', () => { clearTimeout(timer); timer = setTimeout(render, 150); });
+});
+</script>
+</body>
+</html>

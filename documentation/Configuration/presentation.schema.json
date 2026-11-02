@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FIS presentation configuration v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "name", "version", "entryPoint"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "id": { "$ref": "#/$defs/id" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "description": { "type": "string", "maxLength": 1000, "default": "" },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+    },
+    "entryPoint": { "$ref": "#/$defs/path" },
+    "branding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "accentColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#4BCD3E" },
+        "logo": { "$ref": "#/$defs/optionalPath" },
+        "tileTheme": { "type": "string", "enum": ["", "green", "raspberry", "eggplant", "navy", "charcoal"], "default": "green", "description": "Colour of the Demo Library / Downloads tile banner (FIS brand palette)." }
+      }
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "product": { "type": "string", "maxLength": 80, "default": "" },
+        "functions": { "$ref": "#/$defs/labels" },
+        "tags": { "$ref": "#/$defs/labels" },
+        "coverImage": { "$ref": "#/$defs/optionalPath" },
+        "organization": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Organizational structure. L3 is the business line; L8 is the actual solution used for user assignments.",
+          "properties": {
+            "l3": { "enum": ["", "Capital Markets", "Banking", "Payments", "Merchant Solutions", "Corporate"], "default": "" },
+            "l4": { "$ref": "#/$defs/orgLevel" },
+            "l5": { "$ref": "#/$defs/orgLevel" },
+            "l6": { "$ref": "#/$defs/orgLevel" },
+            "l7": { "$ref": "#/$defs/orgLevel" },
+            "l8": { "$ref": "#/$defs/orgLevel" }
+          }
+        }
+      }
+    },
+    "loading": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "readyMode": { "enum": ["navigation", "message"], "default": "navigation" },
+        "timeoutSeconds": { "type": "integer", "minimum": 5, "maximum": 120, "default": 15 }
+      }
+    },
+    "navigation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "sections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/section" }
+        }
+      }
+    },
+    "dataSets": {
+      "type": "array",
+      "maxItems": 20,
+      "default": [],
+      "description": "Personas / sample data offered on the demo start dialog. The selected file is exposed to pages as window.FIS_DEMO_CONTEXT.data.",
+      "items": { "$ref": "#/$defs/dataSet" }
+    }
+  },
+  "$defs": {
+    "dataSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "persona": { "type": "string", "maxLength": 120, "default": "" },
+        "description": { "type": "string", "maxLength": 400, "default": "" },
+        "file": { "$ref": "#/$defs/optionalPath" },
+        "default": { "type": "boolean", "default": false }
+      }
+    },
+    "id": { "type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{1,79}$" },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Path relative to the package root. Filesystem validation must reject absolute paths, traversal, Windows device names, alternate data streams, and paths outside the package."
+    },
+    "orgLevel": { "type": "string", "maxLength": 120, "default": "" },
+    "optionalPath": { "type": "string", "default": "", "description": "Empty or a safe package-relative path to an existing asset." },
+    "labels": {
+      "type": "array",
+      "maxItems": 30,
+      "uniqueItems": true,
+      "default": [],
+      "items": { "type": "string", "minLength": 1, "maxLength": 80 }
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "pages"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "pages": { "type": "array", "items": { "$ref": "#/$defs/page" } }
+      }
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "path"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "path": { "$ref": "#/$defs/path" }
+      }
+    }
+  }
+}

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Repeat and improve</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; align-items: center; }
+  .loop { width: 100%; max-width: 420px; display: block; margin: 0 auto; }
+  .loop .node circle { fill: #15212e; stroke: #2a3b4a; stroke-width: 2; transition: all .4s; }
+  .loop .node.on circle { fill: var(--accent); stroke: var(--accent); }
+  .loop .node text { fill: var(--text); font: 600 13px "Segoe UI", sans-serif; text-anchor: middle; }
+  .loop .node.on text { fill: #1b2600; }
+  .loop .orbit { fill: none; stroke: #2a3b4a; stroke-width: 2; stroke-dasharray: 6 8; }
+  .feed { display: flex; flex-direction: column; gap: 10px; }
+  .feed .card { padding: 14px 16px; opacity: .35; transition: opacity .4s; }
+  .feed .card.on { opacity: 1; border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+</style>
+</head>
+<body data-demo="Confident, Repeatable Delivery" data-chapter="Repeat and improve" data-page="5" data-pages="6" data-accent="lime">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="row" style="justify-content:space-between">
+    <div><p class="eyebrow reveal">Step 4 · Repeat and improve</p><h2 class="reveal">One consultant learns. <em>Everyone</em> improves.</h2></div>
+    <button class="primary reveal" id="cycle">Run the loop ▶</button>
+  </div>
+  <div class="layout">
+    <svg class="loop reveal" viewBox="0 0 420 420">
+      <circle class="orbit" cx="210" cy="210" r="150"/>
+      <circle id="dot" r="9" fill="var(--accent)" cx="210" cy="60"/>
+      <g class="node" data-i="0"><circle cx="210" cy="60" r="46"/><text x="210" y="65">Feedback</text></g>
+      <g class="node" data-i="1"><circle cx="360" cy="210" r="46"/><text x="360" y="215">Update</text></g>
+      <g class="node" data-i="2"><circle cx="210" cy="360" r="46"/><text x="210" y="365">Publish</text></g>
+      <g class="node" data-i="3"><circle cx="60" cy="210" r="46"/><text x="60" y="215">Deliver</text></g>
+    </svg>
+    <div class="feed">
+      <div class="card"><p class="eyebrow">Feedback</p><p>“Clients keep asking about partial settlement.” — consultant, Frankfurt</p></div>
+      <div class="card"><p class="eyebrow">Update</p><p>Content team adds a partial-settlement branch to the Deliver step.</p></div>
+      <div class="card"><p class="eyebrow">Publish</p><p>Trade Lifecycle Manager <b>v1.1.0</b> lands in the repository.</p></div>
+      <div class="card"><p class="eyebrow">Deliver</p><p>Every assigned consultant is prompted on start — one click, updated, verified.</p></div>
+    </div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const nodes = [...document.querySelectorAll('.node')], cards = [...document.querySelectorAll('.feed .card')], dot = document.getElementById('dot');
+  let frame = 0;
+  document.getElementById('cycle').addEventListener('click', () => {
+    cancelAnimationFrame(frame);
+    nodes.forEach(n => n.classList.remove('on')); cards.forEach(c => c.classList.remove('on'));
+    const start = performance.now(), duration = 6000;
+    const tick = now => {
+      const t = Math.min(1, (now - start) / duration), angle = -Math.PI / 2 + t * Math.PI * 2;
+      dot.setAttribute('cx', String(210 + 150 * Math.cos(angle))); dot.setAttribute('cy', String(210 + 150 * Math.sin(angle)));
+      const reached = Math.min(3, Math.floor(t * 4 + .02));
+      for (let i = 0; i <= reached; i++) { nodes[i].classList.add('on'); cards[i].classList.add('on'); }
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+  });
+});
+</script>
+</body>
+</html>

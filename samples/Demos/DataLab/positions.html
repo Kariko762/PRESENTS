@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Positions</title>
+<link rel="stylesheet" href="shared/brand.css">
+<link rel="stylesheet" href="lab.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<script defer src="lab.js"></script>
+<style>
+  .tree { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .tree th { position: sticky; top: 0; background: #142130; text-align: right; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .tree th:first-child { text-align: left; }
+  .tree td { padding: 7px 10px; text-align: right; border-bottom: 1px solid #1f3142; }
+  .tree td:first-child { text-align: left; }
+  .tree tr.desk td { background: #182a3a; font-weight: 700; cursor: pointer; }
+  .tree tr.book td { background: #14232f; font-weight: 600; cursor: pointer; }
+  .tree tr.book td:first-child { padding-left: 28px; }
+  .tree tr.leaf td:first-child { padding-left: 48px; color: var(--muted); }
+  .tree tr.total td { font-weight: 700; border-top: 2px solid var(--accent); }
+  .caret { display: inline-block; width: 14px; color: var(--accent); transition: transform .2s; }
+  tr.closed .caret { transform: rotate(-90deg); }
+  .split2 { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; flex: 1; min-height: 0; }
+  .donut { height: 220px; }
+  .legend-list { display: grid; gap: 6px; font-size: 12.5px; color: var(--muted); }
+  .legend-list div { display: flex; justify-content: space-between; gap: 10px; }
+  .legend-list i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; }
+</style>
+</head>
+<body data-demo="Data Lab" data-chapter="Positions" data-page="4" data-pages="8" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="lab-head">
+    <div><p class="eyebrow reveal">Grouped data · desk › book › instrument, totals computed in the page</p><h2 class="reveal">Where the exposure sits.</h2></div>
+    <div class="row reveal"><div class="segmented" id="measure"><button data-measure="marketValue" aria-pressed="true">Market value</button><button data-measure="pnl" aria-pressed="false">P&amp;L</button></div><div data-lab-status></div></div>
+  </div>
+  <div class="split2 reveal">
+    <div class="card" style="overflow:auto;padding:0"><table class="tree"><thead><tr><th>Desk / book / instrument</th><th>Positions</th><th>Quantity</th><th>Market value</th><th>P&amp;L</th></tr></thead><tbody id="tree"></tbody></table></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <p class="eyebrow" id="donut-title">Share by asset class</p>
+      <div class="donut" id="donut"></div>
+      <div class="legend-list" id="legend"></div>
+    </div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { deck, el, palette } = Lab;
+  Lab.status();
+  const f = deck.format;
+  const positions = deck.rows('positions');
+  const deskNames = Object.fromEntries(deck.rows('desks').map(d => [d.id, d.name]));
+  const sum = (rows, key) => rows.reduce((total, row) => total + (Number(row[key]) || 0), 0);
+  const group = (rows, key) => rows.reduce((map, row) => { (map[row[key]] ||= []).push(row); return map; }, {});
+  const money = value => el('td', { class: value < 0 ? 'neg' : '', text: f.money(value, { compact: Math.abs(value) >= 1e6 }) });
+  const closed = new Set();
+  let measure = 'marketValue';
+
+  function render() {
+    const body = [];
+    for (const [desk, deskRows] of Object.entries(group(positions, 'desk'))) {
+      const deskRow = el('tr', { class: `desk ${closed.has(desk) ? 'closed' : ''}` }, el('td', {}, el('span', { class: 'caret', text: '▾' }), deskNames[desk] || desk),
+        el('td', { text: deskRows.length }), el('td', { text: '' }), money(sum(deskRows, 'marketValue')), money(sum(deskRows, 'pnl')));
+      deskRow.addEventListener('click', () => { closed.has(desk) ? closed.delete(desk) : closed.add(desk); render(); });
+      body.push(deskRow);
+      if (closed.has(desk)) continue;
+      for (const [book, bookRows] of Object.entries(group(deskRows, 'book'))) {
+        const key = `${desk}/${book}`;
+        const bookRow = el('tr', { class: `book ${closed.has(key) ? 'closed' : ''}` }, el('td', {}, el('span', { class: 'caret', text: '▾' }), book),
+          el('td', { text: bookRows.length }), el('td', { text: '' }), money(sum(bookRows, 'marketValue')), money(sum(bookRows, 'pnl')));
+        bookRow.addEventListener('click', () => { closed.has(key) ? closed.delete(key) : closed.add(key); render(); });
+        body.push(bookRow);
+        if (closed.has(key)) continue;
+        bookRows.forEach(p => body.push(el('tr', { class: 'leaf' }, el('td', { text: p.instrument }), el('td', { text: p.assetClass }),
+          el('td', { class: p.quantity < 0 ? 'neg' : '', text: f.number(p.quantity) }), money(p.marketValue), money(p.pnl))));
+      }
+    }
+    body.push(el('tr', { class: 'total' }, el('td', { text: 'Total' }), el('td', { text: positions.length }), el('td', { text: '' }), money(sum(positions, 'marketValue')), money(sum(positions, 'pnl'))));
+    if (!positions.length) body.unshift(el('tr', {}, el('td', { colspan: 5, class: 'small', text: 'This data set has no positions.' })));
+    document.getElementById('tree').replaceChildren(...body);
+
+    const byClass = Object.entries(group(positions, 'assetClass')).map(([label, rows], index) => ({ label, value: rows.reduce((t, r) => t + Math.abs(Number(r[measure]) || 0), 0), color: palette[index % palette.length] }))
+      .sort((a, b) => b.value - a.value);
+    const total = byClass.reduce((t, item) => t + item.value, 0);
+    document.getElementById('donut-title').textContent = measure === 'pnl' ? 'Absolute P&L by asset class' : 'Gross market value by asset class';
+    Lab.donut(document.getElementById('donut'), byClass, { value: f.money(total, { compact: true }), label: 'gross' });
+    document.getElementById('legend').replaceChildren(...byClass.map(item => el('div', {}, el('span', {}, el('i', { style: `background:${item.color}` }), item.label), el('b', { text: total ? f.percent(item.value / total) : '—' }))));
+  }
+  document.querySelectorAll('#measure button').forEach(button => button.addEventListener('click', () => {
+    measure = button.dataset.measure;
+    document.querySelectorAll('#measure button').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+    render();
+  }));
+  render();
+});
+</script>
+</body>
+</html>

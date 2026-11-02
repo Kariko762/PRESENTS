@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prepare</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; flex: 1; }
+  .item { display: flex; gap: 14px; align-items: center; padding: 12px 14px; border-radius: 10px; background: #15212e; border: 1px solid var(--line); cursor: pointer; margin-bottom: 10px; transition: all .3s; }
+  .item .box { width: 24px; height: 24px; border-radius: 6px; border: 2px solid #3a4b5a; display: grid; place-items: center; flex: none; color: #1b2600; font-weight: 800; transition: all .3s; }
+  .item.done { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+  .item.done .box { background: var(--accent); border-color: var(--accent); }
+  .item span.small { margin-left: auto; }
+  .ring { width: 200px; height: 200px; display: block; margin: 10px auto; }
+  .ring circle { fill: none; stroke-width: 14; }
+  .ring text { fill: var(--text); font: 700 38px "Segoe UI", sans-serif; text-anchor: middle; }
+  #ready { text-align: center; font-weight: 700; }
+</style>
+</head>
+<body data-demo="Confident, Repeatable Delivery" data-chapter="Prepare" data-page="2" data-pages="6" data-accent="lime">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <p class="eyebrow reveal">Step 1 · Prepare</p>
+  <h2 class="reveal">From request to <em>ready</em> in minutes.</h2>
+  <p class="lede reveal">The consultant's prep is a checklist, not a project. Tap each item — this is all it takes to be ready for tomorrow's meeting.</p>
+  <div class="layout">
+    <div class="card reveal" id="list">
+      <div class="item"><div class="box"></div><div><b>Find the demo</b><p class="small">Filtered to my solutions: Trade Lifecycle Manager</p></div><span class="small">10 s</span></div>
+      <div class="item"><div class="box"></div><div><b>Check it is current</b><p class="small">Repository says v1.0.0 — I'm on the latest</p></div><span class="small">5 s</span></div>
+      <div class="item"><div class="box"></div><div><b>Pick the audience</b><p class="small">Head of Operations, tier-2 broker-dealer</p></div><span class="small">30 s</span></div>
+      <div class="item"><div class="box"></div><div><b>Run pre-meeting checks</b><p class="small">Package verified, offline-ready, display tested</p></div><span class="small">20 s</span></div>
+      <div class="item"><div class="box"></div><div><b>Favourite for one-click launch</b><p class="small">Pinned to the top of my library</p></div><span class="small">2 s</span></div>
+    </div>
+    <div class="card reveal">
+      <p class="eyebrow">Readiness</p>
+      <svg class="ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="82" stroke="#2a3b4a"/><circle id="arc" cx="100" cy="100" r="82" stroke="var(--accent)" stroke-linecap="round" stroke-dasharray="515.2" stroke-dashoffset="515.2" transform="rotate(-90 100 100)" style="transition:stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1)"/><text x="100" y="114" id="pct">0%</text></svg>
+      <p id="ready" class="small">Total prep time: about 67 seconds</p>
+    </div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const items = [...document.querySelectorAll('.item')], arc = document.getElementById('arc'), pct = document.getElementById('pct'), ready = document.getElementById('ready');
+  function update() {
+    const done = items.filter(i => i.classList.contains('done')).length, ratio = done / items.length;
+    arc.style.strokeDashoffset = String(515.2 * (1 - ratio)); pct.textContent = Math.round(ratio * 100) + '%';
+    ready.textContent = ratio === 1 ? 'Ready to present — confidently.' : 'Total prep time: about 67 seconds';
+    ready.style.color = ratio === 1 ? 'var(--accent)' : '';
+  }
+  items.forEach(item => item.addEventListener('click', () => { item.classList.toggle('done'); item.querySelector('.box').textContent = item.classList.contains('done') ? '✓' : ''; update(); }));
+});
+</script>
+</body>
+</html>

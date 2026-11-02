@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exceptions</title>
+<link rel="stylesheet" href="shared/brand.css">
+<link rel="stylesheet" href="lab.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<script defer src="lab.js"></script>
+<style>
+  .sevs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .sevs .card { padding: 12px 14px; cursor: pointer; border-width: 1px; transition: border-color .2s, transform .2s; }
+  .sevs .card[aria-pressed="true"] { border-color: var(--accent); transform: translateY(-2px); }
+  .sevs b { display: block; font-size: 26px; margin-top: 2px; }
+  #queue { flex: 1; min-height: 0; }
+  #queue .fis-table-scroll { flex: 1; }
+  .lifecycle { display: flex; gap: 0; margin: 4px 0 8px; }
+  .lifecycle span { flex: 1; text-align: center; font-size: 11px; padding: 8px 4px; background: #1b2a39; color: var(--dim); border-right: 2px solid #0f1923; }
+  .lifecycle span.done { background: color-mix(in srgb, var(--accent) 28%, #1b2a39); color: var(--text); }
+  .lifecycle span.stuck { background: #5a2b2b; color: #ffd3cc; }
+</style>
+</head>
+<body data-demo="Data Lab" data-chapter="Exceptions" data-page="6" data-pages="8" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="lab-head">
+    <div><p class="eyebrow reveal">Joined data · exceptions → trades → lifecycle events</p><h2 class="reveal"><span data-fis-field="kpis.openBreaks">24</span> breaks, each one traceable.</h2></div>
+    <div data-lab-status class="reveal"></div>
+  </div>
+  <div class="sevs reveal" id="sevs"></div>
+  <div class="lab-split reveal">
+    <div class="card lab-fill" style="padding:14px"><div id="queue" class="lab-fill"></div></div>
+    <aside class="card" id="detail" style="overflow:auto"><p class="eyebrow">Break detail</p><p>Select an exception. The page looks up its trade and that trade's events — no pre-joined data needed in the data set.</p></aside>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { deck, el } = Lab;
+  Lab.status();
+  const f = deck.format;
+  const exceptions = deck.rows('exceptions');
+  const trades = new Map(deck.rows('trades').map(t => [t.id, t]));
+  const events = deck.rows('events');
+  const stages = ['Captured', 'Enriched', 'Confirmed', 'Matched', 'Cleared', 'Settled'];
+  const severities = ['Critical', 'High', 'Medium', 'Low'];
+  let severity = null;
+
+  const table = deck.table(document.getElementById('queue'), exceptions, [
+    { key: 'id', label: 'Break' },
+    { key: 'severity', label: 'Severity', className: v => `sev-text ${v}` },
+    { key: 'type', label: 'Type' },
+    { key: 'tradeId', label: 'Trade' },
+    { key: 'tradeId', label: 'Notional', align: 'right', format: id => f.money(trades.get(id)?.notional, { compact: true }), sortValue: r => trades.get(r.tradeId)?.notional },
+    { key: 'owner', label: 'Owner' },
+    { key: 'ageHours', label: 'Age (h)', format: 'number', align: 'right', className: v => v > 48 ? 'neg' : v > 24 ? 'warn' : '' },
+    { key: 'raised', label: 'Raised', format: 'dateTime' }
+  ], { pageSize: Lab.fitRows(document.getElementById('queue')), placeholder: 'Search break, trade, owner…', onRow: show, empty: 'No exceptions in this data set — a clean book.' });
+
+  const cards = severities.map(name => {
+    const count = exceptions.filter(e => e.severity === name).length;
+    const card = el('div', { class: 'card', 'aria-pressed': 'false' }, el('span', { class: `sev ${name}`, text: name }), el('b', { text: f.number(count) }));
+    card.addEventListener('click', () => {
+      severity = severity === name ? null : name;
+      cards.forEach(c => c.setAttribute('aria-pressed', String(c === card && severity === name)));
+      table.setFilter(severity ? row => row.severity === severity : null);
+    });
+    return card;
+  });
+  document.getElementById('sevs').replaceChildren(...cards);
+
+  function show(exception) {
+    const trade = trades.get(exception.tradeId);
+    const trail = events.filter(e => e.tradeId === exception.tradeId);
+    const reached = new Set(trail.map(e => e.stage));
+    const last = stages.reduce((idx, stage, i) => reached.has(stage) ? i : idx, -1);
+    document.getElementById('detail').replaceChildren(
+      el('p', { class: 'eyebrow', text: `${exception.id} · ${exception.type}` }),
+      el('h3', { text: trade ? `${trade.instrument} · ${f.money(trade.notional, { compact: true })}` : `Trade ${exception.tradeId} not in this data set` }),
+      el('div', { class: 'lifecycle' }, ...stages.map((stage, i) => el('span', { class: i <= last ? 'done' : i === last + 1 ? 'stuck' : '', text: stage }))),
+      el('dl', { class: 'kv' }, ...[
+        ['Severity', exception.severity], ['Owner', exception.owner], ['Age', `${f.number(exception.ageHours)} hours`], ['Raised', f.dateTime(exception.raised)],
+        ['Counterparty', trade?.counterparty || '—'], ['Desk', trade?.desk || '—'], ['Status', trade?.status || '—']
+      ].flatMap(([k, v]) => [el('dt', { text: k }), el('dd', { text: v ?? '—' })])),
+      exception.note ? el('p', { class: 'callout', text: exception.note }) : '',
+      el('p', { class: 'eyebrow', text: `Events (${trail.length})` }),
+      ...(trail.length ? trail.map(e => el('p', { class: 'small' }, el('b', { text: e.stage }), ` · ${f.dateTime(e.at)} · ${e.detail || ''}`)) : [el('p', { class: 'small', text: 'No events for this trade.' })])
+    );
+  }
+  if (exceptions.length) show(exceptions[0]);
+});
+</script>
+</body>
+</html>

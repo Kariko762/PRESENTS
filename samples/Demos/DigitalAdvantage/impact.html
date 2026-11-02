@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Measurable impact</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .impact { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .impact .kpi { color: var(--accent); }
+  .calc { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; }
+  label { display: block; color: var(--muted); font-size: 13px; margin: 14px 0 6px; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+</style>
+</head>
+<body data-demo="The Digital Advantage" data-chapter="Measurable impact" data-page="5" data-pages="6" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <p class="eyebrow reveal">Advantage 4 · Impact</p>
+  <h2 class="reveal">Less time preparing. <em>More time selling.</em></h2>
+  <div class="impact">
+    <div class="card reveal"><div class="kpi"><span data-count="70">0</span><small>%</small></div><p class="small">less demo preparation time</p></div>
+    <div class="card reveal"><div class="kpi"><span data-count="1">0</span><small> source</small></div><p class="small">of truth for every consultant</p></div>
+    <div class="card reveal"><div class="kpi"><span data-count="0">0</span><small> setup</small></div><p class="small">environments to break before a meeting</p></div>
+    <div class="card reveal"><div class="kpi"><span data-count="3">0</span><small>×</small></div><p class="small">more demos delivered per consultant</p></div>
+  </div>
+  <div class="calc">
+    <div class="card reveal">
+      <p class="eyebrow">Your team<span data-fis-when="institution"> · <span data-fis-field="institution"></span></span></p>
+      <label>Consultants <b id="cv">40</b></label><input id="c" type="range" min="5" max="200" value="40" data-fis-value="team.consultants">
+      <label>Demos per consultant per month <b id="dv">8</b></label><input id="d" type="range" min="1" max="30" value="8" data-fis-value="team.demosPerMonth">
+      <label>Prep hours per demo today <b id="hv">3</b></label><input id="h" type="range" min="1" max="8" value="3" data-fis-value="team.prepHours">
+    </div>
+    <div class="card reveal">
+      <p class="eyebrow">Hours returned to selling each year</p>
+      <div class="kpi" style="font-size:56px;margin-top:10px"><span id="saved">0</span></div>
+      <p class="small" style="margin-top:12px">Illustrative model assuming a 70% reduction in preparation per demo. Replace with your own measures.</p>
+    </div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const $ = id => document.getElementById(id);
+  function update() {
+    $('cv').textContent = $('c').value; $('dv').textContent = $('d').value; $('hv').textContent = $('h').value;
+    FISDeck.count($('saved'), Math.round($('c').value * $('d').value * 12 * $('h').value * .7));
+  }
+  ['c', 'd', 'h'].forEach(id => $(id).addEventListener('input', update));
+  update();
+});
+</script>
+</body>
+</html>

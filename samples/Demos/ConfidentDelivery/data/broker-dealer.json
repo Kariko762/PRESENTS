@@ -1,0 +1,12 @@
+{
+  "persona": "Head of Operations",
+  "institution": "a global broker-dealer",
+  "trade": {
+    "id": "T-48213",
+    "side": "BUY",
+    "quantity": "50,000",
+    "instrument": "XYZ",
+    "price": "41.20",
+    "counterpartyPrice": "41.21"
+  }
+}

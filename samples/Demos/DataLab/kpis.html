@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KPIs &amp; formats</title>
+<link rel="stylesheet" href="shared/brand.css">
+<link rel="stylesheet" href="lab.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<script defer src="lab.js"></script>
+<style>
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .kpis .card { padding: 12px 16px; }
+  .kpis .kpi { font-size: clamp(26px, 3vw, 40px); }
+  .kpis .card p { margin-top: 4px; }
+  .formats { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+  .formats th { text-align: left; font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  .formats td { padding: 8px 10px; border-bottom: 1px solid #22344a; }
+  .formats tr.current td { color: var(--accent); font-weight: 600; }
+  .bind code { font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; color: var(--accent); }
+  .bind li { margin-bottom: 8px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+</style>
+</head>
+<body data-demo="Data Lab" data-chapter="KPIs &amp; formats" data-page="2" data-pages="8" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="lab-head">
+    <div><p class="eyebrow reveal">Single values · numbers that change with the client</p><h2 class="reveal">Today at <em data-fis-field="client.shortName">your bank</em></h2></div>
+    <div data-lab-status class="reveal"></div>
+  </div>
+  <div class="kpis">
+    <div class="card reveal"><p class="eyebrow">Trades today</p><div class="kpi" data-count="12400" data-fis-count="kpis.tradesToday">0</div><p class="small">data-fis-count · animated counter</p></div>
+    <div class="card reveal"><p class="eyebrow">Gross notional</p><div class="kpi" id="notional">—</div><p class="small">FISDeck.format.money(…, { compact: true })</p></div>
+    <div class="card reveal"><p class="eyebrow">Straight-through rate</p><div class="kpi" id="stp">—</div><p class="small">FISDeck.format.percent</p></div>
+    <div class="card reveal"><p class="eyebrow">Open breaks</p><div class="kpi" data-count="24" data-fis-count="kpis.openBreaks">0</div><p class="small">data-fis-count</p></div>
+    <div class="card reveal"><p class="eyebrow">Settled on time</p><div class="kpi" id="ontime">—</div><p class="small">FISDeck.format.percent(…, 2)</p></div>
+    <div class="card reveal"><p class="eyebrow">Average match time</p><div class="kpi"><span id="match">—</span><small>min</small></div><p class="small">FISDeck.format.number(…, 1)</p></div>
+  </div>
+  <div class="grid-2" style="flex:1;min-height:0">
+    <div class="card reveal">
+      <p class="eyebrow">Same number, different locales</p>
+      <table class="formats"><thead><tr><th>Locale</th><th>Money</th><th>Compact</th><th>Percent</th><th>Date</th></tr></thead><tbody id="formats"></tbody></table>
+      <p class="small" style="margin-top:10px">The highlighted row is the data set's own <code>locale</code> / <code>currency</code> — that is what every page uses.</p>
+    </div>
+    <div class="card reveal bind">
+      <p class="eyebrow">Three ways a page reads data</p>
+      <ul style="padding-left:18px;margin:10px 0 0">
+        <li><code>data-fis-field="client.shortName"</code> — no script: the text is replaced when the field exists, otherwise the HTML default stays.</li>
+        <li><code>data-fis-count="kpis.tradesToday"</code> — animated counter; <code>data-fis-when="kpis.openBreaks"</code> hides an element when the value is empty or zero.</li>
+        <li><code>FISDeck.data('kpis.notional', 0)</code> — in script, with a fallback, then <code>FISDeck.format.money()</code> to render it in the client's currency.</li>
+      </ul>
+      <p class="callout" style="margin-top:6px" data-fis-when="kpis.openBreaks"><span data-fis-field="kpis.openBreaks">0</span> breaks are open — this line only shows when the value is non-zero.</p>
+    </div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { deck, el } = Lab;
+  Lab.status();
+  const f = deck.format;
+  const notional = deck.data('kpis.notional', 1.84e10);
+  document.getElementById('notional').textContent = f.money(notional, { compact: true });
+  document.getElementById('stp').textContent = f.percent(deck.data('kpis.stpRate', 0.962));
+  document.getElementById('ontime').textContent = f.percent(deck.data('kpis.settledOnTime', 0.981), 2);
+  document.getElementById('match').textContent = f.number(deck.data('kpis.avgMatchMinutes', 4.8), 1);
+  const asOf = deck.data('asOf', '2026-10-30');
+  const current = f.locale;
+  const locales = [...new Set([current, 'en-US', 'en-GB', 'de-DE', 'fr-FR', 'ja-JP'])];
+  const currencyFor = { 'en-US': 'USD', 'en-GB': 'GBP', 'de-DE': 'EUR', 'fr-FR': 'EUR', 'ja-JP': 'JPY' };
+  document.getElementById('formats').replaceChildren(...locales.map(locale => {
+    const currency = locale === current ? f.currency : currencyFor[locale] || 'USD';
+    const money = new Intl.NumberFormat(locale, { style: 'currency', currency }).format(1234567.891);
+    const compact = new Intl.NumberFormat(locale, { style: 'currency', currency, notation: 'compact', maximumFractionDigits: 1 }).format(notional || 0);
+    const percent = new Intl.NumberFormat(locale, { style: 'percent', minimumFractionDigits: 1 }).format(0.9625);
+    const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(asOf));
+    return el('tr', { class: locale === current ? 'current' : '' }, el('td', { text: locale }), el('td', { text: money }), el('td', { text: compact }), el('td', { text: percent }), el('td', { text: date }));
+  }));
+});
+</script>
+</body>
+</html>

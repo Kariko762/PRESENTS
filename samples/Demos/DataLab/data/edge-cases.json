@@ -1,0 +1,35 @@
+{
+  "client": {
+    "name": "Ünïcødé & <Script> Test \"Quotes\" Ltd",
+    "shortName": null
+  },
+  "persona": "QA · edge cases",
+  "locale": "fr-FR",
+  "currency": "CHF",
+  "asOf": "2026-10-30",
+  "headline": "",
+  "kpis": {
+    "tradesToday": 0,
+    "notional": -1250000,
+    "stpRate": null,
+    "openBreaks": 0
+  },
+  "desks": [],
+  "trades": [
+    {"id":"E-48000","tradeDate":"2026-10-23","settleDate":"2026-10-25","desk":"FX","book":"FX-SPOT-01","side":"BUY","instrument":"GBP/USD","isin":"","assetClass":"FX Spot","quantity":2000000,"price":1.2711,"notional":2542200.0,"counterparty":"Société Générale – Zürich Branch (测试) very long legal entity name very long legal entity name very long legal entity name very long legal entity name ","venue":"Bloomberg","status":"Settled"},
+    {"id":"E-48001","tradeDate":"2026-10-20","settleDate":"2026-10-21","desk":"EQ-CASH","book":"EQ-HK-03","side":"BUY","instrument":"VOD","isin":"GB00BH4HKS39","assetClass":"Equity","quantity":90000,"price":0.72,"notional":-12500000.5,"counterparty":"Solent Clearing","venue":"MTS","status":"Settled"},
+    {"id":"E-48002","tradeDate":"2026-10-05","settleDate":"2026-10-07","desk":"FX","book":"FX-SPOT-01","side":"SELL","instrument":"EUR/USD","isin":"","assetClass":"FX Spot","quantity":33000000,"price":null,"notional":35894100.0,"counterparty":"Atlas Capital Markets","venue":"OTC","status":"Settled"},
+    {"id":"E-48003","tradeDate":"2026-10-23","settleDate":"2026-10-25","desk":"FI-CREDIT","book":"CR-IG-01","side":"BUY","instrument":"FORD 6.1 2032","isin":"US345370DB39","assetClass":"High Yield Bond","quantity":5250000,"price":97.66,"notional":5127150.0,"counterparty":"Union Pacifica Bank","venue":"OTC","status":""},
+    {"id":"E-48004","tradeDate":"2026-10-27","desk":"FI-RATES","book":"RT-SWAP-02","side":"BUY","instrument":"UST 4.25 2034","isin":"US91282CKQ32","assetClass":"Government Bond","quantity":11000000,"price":98.58,"notional":10843800.0,"counterparty":"Solent Clearing","venue":"XLON","status":"Settled"},
+    {"id":"E-48005","tradeDate":"2026-10-13","settleDate":"2026-10-15","desk":"FI-CREDIT","book":"CR-IG-01","side":"SELL","instrument":"VW 4.25 2030","isin":"XS2554488978","assetClass":"Corporate Bond","quantity":0,"price":100.04,"notional":17006800.0,"counterparty":"Harbour Global Investors","venue":"Bloomberg","status":"Settled"}
+  ],
+  "positions": [],
+  "series": {
+    "dates": [],
+    "pnl": [],
+    "var": [],
+    "volume": []
+  },
+  "exceptions": [],
+  "events": []
+}

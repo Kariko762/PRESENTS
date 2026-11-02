@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Designed for Digital</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .series { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 8px; }
+  .series .card { padding: 16px 18px; }
+  .series .card.current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .series b { display: block; font-size: 15px; margin: 4px 0; color: var(--text); }
+  .orbit { position: absolute; right: -120px; top: 50%; width: 620px; height: 620px; transform: translateY(-50%); z-index: 0; opacity: .8; }
+</style>
+</head>
+<body data-demo="Designed for Digital" data-chapter="Opening" data-page="1" data-pages="6">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <svg class="orbit" viewBox="0 0 600 600" aria-hidden="true">
+    <circle cx="300" cy="300" r="250" fill="none" stroke="#2a3b4a"/>
+    <circle cx="300" cy="300" r="180" fill="none" stroke="#2a3b4a"/>
+    <circle cx="300" cy="300" r="250" fill="none" stroke="#4bcd3e" stroke-width="2" class="flowline" opacity=".7"/>
+    <circle cx="300" cy="300" r="180" fill="none" stroke="#43cebd" stroke-width="2" class="flowline" opacity=".5"/>
+    <circle r="7" fill="#69e43c"><animateMotion dur="9s" repeatCount="indefinite" path="M300,50 a250,250 0 1,1 -0.1,0"/></circle>
+    <circle r="5" fill="#43cebd"><animateMotion dur="6s" repeatCount="indefinite" path="M300,120 a180,180 0 1,0 0.1,0"/></circle>
+  </svg>
+  <section class="hero">
+    <p class="eyebrow reveal">Demo 1 of 3 · What we can design</p>
+    <h1 class="reveal">Designed for <em>digital</em>.<br>Built to be shown.</h1>
+    <p class="lede reveal">Static slides tell a story. Digital content lets the customer <em>see</em> it. Over the next five pages we use a real-time payment journey to show what our team can design for pre-sales: motion that explains, data you can touch, scenarios that adapt in the room — all from one brand kit.</p>
+    <div class="row reveal"><span class="chip">Instant Payments Hub</span><span class="chip neutral">Payments › Money Movement › Real-Time Payments</span></div>
+    <div class="series reveal">
+      <div class="card current"><span class="eyebrow">01 · You are here</span><b>Designed for Digital</b><p class="small">What we can design</p></div>
+      <div class="card"><span class="eyebrow" style="color:var(--teal)">02</span><b>The Digital Advantage</b><p class="small">Why it matters</p></div>
+      <div class="card"><span class="eyebrow" style="color:var(--lime)">03</span><b>Confident, Repeatable Delivery</b><p class="small">How consultants use it</p></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

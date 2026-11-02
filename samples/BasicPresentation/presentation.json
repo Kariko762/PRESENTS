@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "id": "fis-demo",
+  "name": "FIS Interactive Demo",
+  "description": "A small offline-first example presentation.",
+  "version": "1.0.0",
+  "entryPoint": "index.html",
+  "branding": {
+    "accentColor": "#4BCD3E",
+    "logo": ""
+  },
+  "navigation": {
+    "enabled": true,
+    "sections": [
+      {
+        "id": "start-here",
+        "title": "Start here",
+        "pages": [
+          { "id": "welcome", "title": "Welcome", "path": "index.html" },
+          { "id": "platform", "title": "The platform", "path": "pages/platform.html" },
+          { "id": "media", "title": "Image and video", "path": "pages/media.html" }
+        ]
+      }
+    ]
+  }
+}

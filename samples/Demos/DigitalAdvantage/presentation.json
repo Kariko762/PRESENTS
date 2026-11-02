@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "id": "fis-digital-advantage",
+  "name": "The Digital Advantage",
+  "description": "Demo 2 of 3 · Why digital content matters. Static versus digital, always-current versions, offline confidence and measurable impact — told through digital account opening.",
+  "version": "1.0.0",
+  "entryPoint": "index.html",
+  "branding": {
+    "accentColor": "#43CEBD",
+    "logo": "shared/fis-logo.png"
+  },
+  "catalog": {
+    "product": "Digital Account Origination",
+    "functions": [
+      "Benefits of digital content",
+      "Value storytelling"
+    ],
+    "tags": [
+      "Story 2 of 3",
+      "Branded",
+      "Offline"
+    ],
+    "coverImage": "",
+    "organization": {
+      "l3": "Banking",
+      "l4": "Digital Banking",
+      "l5": "Retail Banking",
+      "l6": "Customer Onboarding",
+      "l7": "Account Opening",
+      "l8": "Digital Account Origination"
+    }
+  },
+  "navigation": {
+    "enabled": true,
+    "sections": [
+      {
+        "id": "story",
+        "title": "The Digital Advantage",
+        "pages": [
+          {
+            "id": "opening",
+            "title": "The digital advantage",
+            "path": "index.html"
+          },
+          {
+            "id": "compare",
+            "title": "Static versus digital",
+            "path": "compare.html"
+          },
+          {
+            "id": "current",
+            "title": "Always current",
+            "path": "current.html"
+          },
+          {
+            "id": "anywhere",
+            "title": "Works anywhere",
+            "path": "anywhere.html"
+          },
+          {
+            "id": "impact",
+            "title": "Measurable impact",
+            "path": "impact.html"
+          },
+          {
+            "id": "summary",
+            "title": "Why it matters",
+            "path": "summary.html"
+          }
+        ]
+      }
+    ]
+  },
+  "dataSets": [
+    {
+      "id": "challenger-bank",
+      "name": "Digital challenger bank",
+      "persona": "Chief Digital Officer",
+      "description": "Small, fast-moving sales team demoing weekly.",
+      "file": "data/challenger-bank.json",
+      "default": true
+    },
+    {
+      "id": "community-bank",
+      "name": "Community bank",
+      "persona": "Head of Retail Banking",
+      "description": "Lean team with long preparation cycles today.",
+      "file": "data/community-bank.json",
+      "default": false
+    },
+    {
+      "id": "tier1-bank",
+      "name": "Tier-1 universal bank",
+      "persona": "Head of Sales Enablement",
+      "description": "Large global pre-sales organisation.",
+      "file": "data/tier1-bank.json",
+      "default": false
+    }
+  ]
+}

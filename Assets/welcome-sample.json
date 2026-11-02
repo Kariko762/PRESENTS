@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "items": [
+    {
+      "id": "sample-media-demo",
+      "kind": "demo",
+      "title": "Meet the interactive demo: pages, images and video in one place",
+      "summary": "Take the bundled offline sample for a spin. Explore the runtime menu, view the artwork and play the locally packaged video.",
+      "body": "This is a sample Welcome post, included to preview how published content will look. It is not an official FIS announcement.\n\nThe bundled demonstration brings together three existing HTML pages, an SVG illustration and a short MP4. Everything travels in one .fisxpkg, so the original source folder is not needed for playback.\n\nChoose View demo in Library to find the sample if you have installed it. The Library highlights the matching demo rather than launching it automatically.",
+      "publishedUtc": "2026-11-01T10:00:00Z",
+      "product": "Presentation Platform",
+      "version": "1.0.0",
+      "demoId": "fis-demo"
+    },
+    {
+      "id": "sample-runtime-update",
+      "kind": "update",
+      "title": "A more confident start to every presentation",
+      "summary": "Package checks, a configured Home page and local diagnostics help presenters get from a verified package to the right starting point.",
+      "body": "Sample update post — not an official product release notice.\n\nThe development runtime now checks the package and its configuration before revealing the entry page. Home returns to the configured starting point, while diagnostic records help investigate page-load failures.\n\nAnnouncements here describe published changes; they do not install software or modify demo packages. You stay in control of what you import and launch.",
+      "publishedUtc": "2026-10-31T14:30:00Z",
+      "product": "Presentation Platform"
+    },
+    {
+      "id": "sample-library-news",
+      "kind": "news",
+      "title": "Your local Demo Library, ready when you are",
+      "summary": "Find demos by product, functions or tags, keep favorites close and revisit your recently opened presentations.",
+      "body": "Sample news post for the Welcome design preview.\n\nThe local Demo Library collects imported packages and presents their metadata as cards. Search works across names, descriptions, products, business functions and tags. Favorites and recent launch requests are stored on your machine.\n\nWhen a live Welcome feed is configured, its valid content takes priority. If that feed becomes unavailable, the last valid copy is shown from the local cache. These sample posts remain separate from real feed caches.",
+      "publishedUtc": "2026-10-30T09:00:00Z",
+      "product": "Demo Library"
+    }
+  ]
+}

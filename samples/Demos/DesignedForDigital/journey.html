@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Motion that explains</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .journey { width: 100%; height: auto; max-height: 40vh; }
+  .node rect { fill: #15212e; stroke: #2a3b4a; stroke-width: 1.5; transition: all .35s; rx: 14; }
+  .node text { fill: #f3f6f8; font: 600 14px "Segoe UI"; text-anchor: middle; }
+  .node .sub { fill: #a9b8c2; font-weight: 400; font-size: 11px; }
+  .node { cursor: pointer; }
+  .node.active rect { stroke: #4bcd3e; fill: #173a2a; }
+  .node.passed rect { stroke: #2f7a2a; }
+  .detail { display: grid; grid-template-columns: 1fr 260px; gap: 18px; align-items: stretch; }
+  .clock { display: flex; flex-direction: column; justify-content: center; text-align: center; }
+  .clock .kpi { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body data-demo="Designed for Digital" data-chapter="Motion that explains" data-page="2" data-pages="6">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="row" style="justify-content:space-between">
+    <div>
+      <p class="eyebrow reveal">Capability 1 · Motion</p>
+      <h2 class="reveal">Motion that <em>explains</em> — a payment in under a second.</h2>
+    </div>
+    <div class="row reveal"><button id="play" class="primary">▶ Play journey</button><button id="reset">Reset</button></div>
+  </div>
+  <p class="lede reveal">Animation is not decoration. Each hop below is a step the customer cares about. Play the journey, or select any step to explore it at the customer's pace.</p>
+  <svg class="journey reveal" viewBox="0 0 1200 230" role="img" aria-label="Real-time payment journey">
+    <path id="track" d="M 100 115 L 1100 115" stroke="#2a3b4a" stroke-width="3" fill="none"/>
+    <path id="trackLive" d="M 100 115 L 1100 115" stroke="#4bcd3e" stroke-width="3" fill="none" class="flowline" opacity=".0"/>
+    <g id="nodes"></g>
+    <circle id="token" cx="100" cy="115" r="10" fill="#69e43c" opacity="0">
+      <animate attributeName="r" values="9;12;9" dur="1s" repeatCount="indefinite"/>
+    </circle>
+  </svg>
+  <div class="detail reveal">
+    <div class="card"><p class="eyebrow" id="stepIndex">Step 1 of 6</p><h3 id="stepTitle">Payer initiates</h3><p id="stepText"></p></div>
+    <div class="card clock"><p class="small">Elapsed (illustrative)</p><div class="kpi"><span id="elapsed">0</span><small>ms</small></div><p class="small" id="clockNote">Target: under 1,000 ms end to end</p></div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const steps = [
+    ['Payer', 'Mobile app', 'Payer initiates', 'The customer confirms a payment in their banking app. Strong authentication and a clear amount build trust from the first tap.', 0],
+    ['Payer bank', 'Debit & screen', 'Payer bank validates', 'Funds checks, fraud scoring and sanctions screening run in parallel — not in sequence — so the customer never waits on a queue.', 180],
+    ['Payments Hub', 'Orchestrate', 'Hub orchestrates', 'The Instant Payments Hub selects the right rail, formats the ISO 20022 message and tracks the payment end to end.', 340],
+    ['Network', 'Clear', 'Network clears', 'The real-time scheme routes the message to the receiving institution and guarantees irrevocable settlement.', 560],
+    ['Payee bank', 'Credit', 'Payee bank credits', 'The receiving bank credits the account instantly and confirms back through the network.', 760],
+    ['Payee', 'Notified', 'Payee is notified', 'Money is available to spend. Both parties get a confirmation — the moment that wins the room.', 900]
+  ];
+  const nodes = document.getElementById('nodes');
+  const xs = steps.map((_, i) => 100 + i * 200);
+  steps.forEach((step, i) => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'node'); g.setAttribute('tabindex', '0');
+    g.innerHTML = `<rect x="${xs[i] - 80}" y="70" width="160" height="90"/><text x="${xs[i]}" y="110">${step[0]}</text><text class="sub" x="${xs[i]}" y="132">${step[1]}</text>`;
+    g.addEventListener('click', () => { stop(); show(i); moveToken(i); });
+    g.addEventListener('keydown', e => { if (e.key === 'Enter') { stop(); show(i); moveToken(i); } });
+    nodes.appendChild(g);
+  });
+  const token = document.getElementById('token'), live = document.getElementById('trackLive');
+  const elapsed = document.getElementById('elapsed');
+  let timer = null;
+  function show(i) {
+    [...nodes.children].forEach((g, n) => { g.classList.toggle('active', n === i); g.classList.toggle('passed', n < i); });
+    document.getElementById('stepIndex').textContent = `Step ${i + 1} of ${steps.length}`;
+    document.getElementById('stepTitle').textContent = steps[i][2];
+    document.getElementById('stepText').textContent = steps[i][3];
+    FISDeck.count(elapsed, steps[i][4]);
+  }
+  function moveToken(i) {
+    token.style.transition = 'cx .7s cubic-bezier(.2,.8,.2,1), opacity .3s';
+    token.setAttribute('opacity', '1'); token.style.cx = xs[i] + 'px';
+    live.setAttribute('opacity', '.9'); live.setAttribute('d', `M 100 115 L ${xs[i]} 115`);
+  }
+  function stop() { clearInterval(timer); timer = null; }
+  document.getElementById('play').addEventListener('click', () => {
+    stop(); let i = 0; show(0); moveToken(0);
+    timer = setInterval(() => { i++; if (i >= steps.length) { stop(); document.getElementById('clockNote').textContent = 'Journey complete — settled and confirmed'; return; } show(i); moveToken(i); }, 1500);
+  });
+  document.getElementById('reset').addEventListener('click', () => { stop(); show(0); token.setAttribute('opacity', '0'); token.style.cx = '100px'; live.setAttribute('opacity', '0'); });
+  show(0);
+});
+</script>
+</body>
+</html>

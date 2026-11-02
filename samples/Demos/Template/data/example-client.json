@@ -1,0 +1,7 @@
+{
+  "$extends": "data/base.json",
+  "client": { "name": "Northwind Savings Bank", "shortName": "Northwind" },
+  "locale": "en-US",
+  "currency": "USD",
+  "kpis": { "paymentsToday": 96000, "openExceptions": 4 }
+}

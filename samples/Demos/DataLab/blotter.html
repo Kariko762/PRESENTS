@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trade blotter</title>
+<link rel="stylesheet" href="shared/brand.css">
+<link rel="stylesheet" href="lab.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<script defer src="lab.js"></script>
+<style>
+  .filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .segmented button { padding: 6px 12px; font-size: 12.5px; }
+  .segmented button span { opacity: .65; margin-left: 4px; font-weight: 400; }
+  #blotter { flex: 1; min-height: 0; }
+  #blotter .fis-table-scroll { flex: 1; }
+  .drawer { display: flex; flex-direction: column; gap: 12px; overflow: auto; }
+  .drawer h3 { font-size: 20px; }
+  .timeline { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 2px solid var(--line); font-size: 12.5px; }
+  .timeline li { margin: 0 0 10px; position: relative; color: var(--muted); }
+  .timeline li::before { content: ''; position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+  .timeline b { color: var(--text); font-weight: 600; }
+</style>
+</head>
+<body data-demo="Data Lab" data-chapter="Trade blotter" data-page="3" data-pages="8" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="lab-head">
+    <div><p class="eyebrow reveal">Row data · an array of trade objects</p><h2 class="reveal">Every trade for <em data-fis-field="client.shortName">your bank</em>, searchable.</h2></div>
+    <div data-lab-status class="reveal"></div>
+  </div>
+  <div class="filters reveal">
+    <div class="segmented" id="status-filter"></div>
+    <div class="segmented" id="desk-filter"></div>
+  </div>
+  <div class="lab-split reveal">
+    <div class="card lab-fill" style="padding:14px"><div id="blotter" class="lab-fill"></div></div>
+    <aside class="card drawer" id="drawer"><p class="eyebrow">Trade detail</p><p>Select a trade to see its fields, its exceptions and its lifecycle events — three tables joined on <code class="mono">tradeId</code>.</p></aside>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { deck, el, esc } = Lab;
+  Lab.status();
+  const f = deck.format;
+  const trades = deck.rows('trades');
+  const exceptions = deck.rows('exceptions');
+  const events = deck.rows('events');
+  const statusClass = value => ({ Settled: 'pos', Exception: 'neg', Cancelled: 'warn', Pending: 'warn' })[value] || '';
+  const columns = [
+    { key: 'id', label: 'Trade' },
+    { key: 'tradeDate', label: 'Trade date', format: 'date' },
+    { key: 'side', label: 'Side', className: v => v === 'BUY' ? 'pos' : 'neg' },
+    { key: 'instrument', label: 'Instrument' },
+    { key: 'quantity', label: 'Quantity', format: 'number', align: 'right' },
+    { key: 'price', label: 'Price', format: (v, r) => v == null ? '—' : f.number(v, r.assetClass?.startsWith('FX') ? 4 : 2), align: 'right' },
+    { key: 'notional', label: 'Notional', format: 'money', align: 'right', className: v => v < 0 ? 'neg' : '' },
+    { key: 'counterparty', label: 'Counterparty' },
+    { key: 'status', label: 'Status', className: statusClass }
+  ];
+  const table = deck.table(document.getElementById('blotter'), trades, columns, {
+    pageSize: Lab.fitRows(document.getElementById('blotter')),
+    placeholder: 'Search trade, instrument, counterparty…',
+    onRow: show
+  });
+
+  const filters = { status: null, desk: null };
+  const apply = () => table.setFilter(row => (!filters.status || row.status === filters.status) && (!filters.desk || row.desk === filters.desk));
+  function segmented(host, key, values) {
+    const buttons = [null, ...values].map(value => {
+      const count = value == null ? trades.length : trades.filter(t => t[key] === value).length;
+      const button = el('button', { 'aria-pressed': String(value == null) }, value ?? 'All', el('span', { text: count.toLocaleString() }));
+      button.addEventListener('click', () => { filters[key] = value; buttons.forEach(b => b.setAttribute('aria-pressed', String(b === button))); apply(); });
+      return button;
+    });
+    host.replaceChildren(...buttons);
+  }
+  const unique = key => [...new Set(trades.map(t => t[key]).filter(Boolean))];
+  segmented(document.getElementById('status-filter'), 'status', ['Settled', 'Cleared', 'Matched', 'Pending', 'Exception', 'Cancelled'].filter(s => unique('status').includes(s)));
+  const deskNames = Object.fromEntries(deck.rows('desks').map(d => [d.id, d.name]));
+  segmented(document.getElementById('desk-filter'), 'desk', unique('desk'));
+  document.querySelectorAll('#desk-filter button').forEach(b => { const id = b.firstChild.textContent; if (deskNames[id]) b.title = deskNames[id]; });
+
+  function show(trade) {
+    const drawer = document.getElementById('drawer');
+    const related = exceptions.filter(e => e.tradeId === trade.id);
+    const lifecycle = events.filter(e => e.tradeId === trade.id);
+    drawer.replaceChildren(
+      el('p', { class: 'eyebrow', text: `${trade.side ?? ''} · ${trade.assetClass ?? ''}` }),
+      el('h3', { text: `${trade.id} · ${trade.instrument ?? ''}` }),
+      el('dl', { class: 'kv' }, ...[
+        ['Notional', f.money(trade.notional)], ['Quantity', f.number(trade.quantity)], ['Price', trade.price == null ? '—' : f.number(trade.price, 4)],
+        ['Trade date', f.date(trade.tradeDate)], ['Settle date', f.date(trade.settleDate)], ['Desk / book', `${deskNames[trade.desk] || trade.desk || '—'} / ${trade.book || '—'}`],
+        ['Counterparty', trade.counterparty || '—'], ['Venue', trade.venue || '—'], ['ISIN', trade.isin || '—'], ['Status', trade.status || '(blank)']
+      ].flatMap(([k, v]) => [el('dt', { text: k }), el('dd', { text: v })])),
+      el('p', { class: 'eyebrow', text: `Exceptions (${related.length})` }),
+      ...(related.length ? related.map(e => el('div', { class: 'callout' }, el('span', { class: `sev ${e.severity}`, text: e.severity }), ` ${e.type} · ${e.owner}`)) : [el('p', { class: 'small', text: 'None for this trade.' })]),
+      el('p', { class: 'eyebrow', text: `Lifecycle events (${lifecycle.length})` }),
+      lifecycle.length ? el('ul', { class: 'timeline' }, ...lifecycle.map(e => el('li', {}, el('b', { text: e.stage }), ` · ${f.dateTime(e.at)}`))) : el('p', { class: 'small', text: 'No events recorded in this data set.' })
+    );
+  }
+  if (trades.length) {
+    const first = exceptions.length ? trades.find(t => t.id === exceptions[0].tradeId) : null;
+    if (first) show(first);
+  }
+});
+</script>
+</body>
+</html>

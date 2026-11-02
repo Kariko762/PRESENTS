@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Key numbers</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .accounts { min-height: 220px; display: flex; flex-direction: column; }
+</style>
+</head>
+<body data-demo="Template Demo" data-chapter="Key numbers" data-page="2" data-pages="3">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <p class="eyebrow reveal">Template · Data from the selected data set</p>
+  <h2 class="reveal">Today at <em data-fis-field="client.shortName">your bank</em></h2>
+  <div class="grid-4">
+    <!-- No script: data-count is the HTML default, data-fis-count replaces it from the data set. -->
+    <div class="card reveal"><p class="eyebrow">Payments today</p><div class="kpi" data-count="100000" data-fis-count="kpis.paymentsToday">0</div></div>
+    <div class="card reveal"><p class="eyebrow">Straight-through</p><div class="kpi" id="stp">—</div></div>
+    <div class="card reveal"><p class="eyebrow">Value today</p><div class="kpi" id="value">—</div></div>
+    <div class="card reveal"><p class="eyebrow">Open exceptions</p><div class="kpi" data-count="0" data-fis-count="kpis.openExceptions">0</div></div>
+  </div>
+  <div class="card accounts reveal"><p class="eyebrow">Accounts · FISDeck.table</p><div id="accounts"></div></div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const deck = FISDeck, f = deck.format;
+  // Script reads: always pass a fallback, and format with the set's locale and currency.
+  document.getElementById('stp').textContent = f.percent(deck.data('kpis.stpRate', null), 1);
+  document.getElementById('value').textContent = f.money(deck.data('kpis.valueToday', null), { compact: true });
+  deck.table(document.getElementById('accounts'), deck.rows('accounts'), [
+    { key: 'id', label: 'Account' },
+    { key: 'name', label: 'Name' },
+    { key: 'type', label: 'Type' },
+    { key: 'balance', label: 'Balance', format: 'money', align: 'right', className: v => v < 0 ? 'neg' : '' },
+    { key: 'status', label: 'Status' }
+  ], { pageSize: 6, placeholder: 'Search accounts…', empty: 'No accounts in this data set.' });
+});
+</script>
+</body>
+</html>

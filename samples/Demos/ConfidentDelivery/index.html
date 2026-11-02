@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confident, Repeatable Delivery</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .series { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .series .card { padding: 16px 18px; } .series .card.current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .series b { display: block; font-size: 15px; margin: 4px 0; }
+  .cycle { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .cycle .card { position: relative; }
+  .cycle .card:not(:last-child)::after { content: "➜"; position: absolute; right: -14px; top: 50%; transform: translate(50%, -50%); color: var(--accent); }
+</style>
+</head>
+<body data-demo="Confident, Repeatable Delivery" data-chapter="Opening" data-page="1" data-pages="6" data-accent="lime">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <section class="hero">
+    <p class="eyebrow reveal">Demo 3 of 3 · How consultants use it</p>
+    <h1 class="reveal">Confident. <em>Repeatable.</em> Every time.</h1>
+    <p class="lede reveal">We've seen what digital content can be and why it matters. Now we follow a pre-sales consultant through a real cycle — a Capital Markets post-trade demo — and see how the platform makes a great meeting repeatable.</p>
+    <div class="cycle">
+      <div class="card reveal"><div class="icon">☑</div><h3>Prepare</h3><p class="small">Ready in minutes</p></div>
+      <div class="card reveal"><div class="icon">🎙</div><h3>Rehearse</h3><p class="small">Talk track built in</p></div>
+      <div class="card reveal"><div class="icon">▶</div><h3>Deliver</h3><p class="small">Cues on every step</p></div>
+      <div class="card reveal"><div class="icon">↻</div><h3>Improve</h3><p class="small">Everyone gets better</p></div>
+    </div>
+    <div class="series reveal">
+      <div class="card"><span class="eyebrow" style="color:var(--green)">01</span><b>Designed for Digital</b><p class="small">What we can design</p></div>
+      <div class="card"><span class="eyebrow" style="color:var(--teal)">02</span><b>The Digital Advantage</b><p class="small">Why it matters</p></div>
+      <div class="card current"><span class="eyebrow">03 · You are here</span><b>Confident, Repeatable Delivery</b><p class="small">How consultants use it</p></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

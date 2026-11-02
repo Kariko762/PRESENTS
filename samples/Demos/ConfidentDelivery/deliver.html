@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deliver</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .lane { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; position: relative; margin-top: 8px; }
+  .stage-box { padding: 18px 14px; border-radius: 12px; background: #15212e; border: 1px solid var(--line); text-align: center; transition: all .45s; min-height: 132px; }
+  .stage-box .icon { margin: 0 auto 10px; }
+  .stage-box.active { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 22%, transparent); }
+  .stage-box.passed { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+  .stage-box.alert { border-color: #ffb547; box-shadow: 0 10px 30px rgba(255, 181, 71, .2); }
+  .track { height: 6px; border-radius: 3px; background: #2a3b4a; margin: 18px 0 4px; overflow: hidden; }
+  .track i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .6s var(--ease); }
+  .bottom { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; flex: 1; }
+  .cue { border: 1px dashed var(--accent); }
+  .cue .say { font-size: 18px; line-height: 1.5; margin-top: 8px; }
+  .log { font: 13px Consolas, monospace; color: var(--muted); line-height: 1.8; max-height: 170px; overflow: auto; }
+  .log b { color: var(--accent); } .log .warn { color: #ffb547; }
+</style>
+</head>
+<body data-demo="Confident, Repeatable Delivery" data-chapter="Deliver" data-page="4" data-pages="6" data-accent="lime">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="row" style="justify-content:space-between">
+    <div><p class="eyebrow reveal">Step 3 · Deliver</p><h2 class="reveal">One trade, end to end — <em>with cues at every step.</em></h2></div>
+    <div class="row reveal"><button id="back">◀ Back</button><button class="primary" id="next">Next step ▶</button></div>
+  </div>
+  <div class="lane reveal" id="lane">
+    <div class="stage-box"><div class="icon">⌁</div><h3>Capture</h3><p class="small">Trade booked</p></div>
+    <div class="stage-box"><div class="icon">✚</div><h3>Enrich</h3><p class="small">SSIs &amp; reference data</p></div>
+    <div class="stage-box"><div class="icon">⇄</div><h3>Match</h3><p class="small">Affirm with counterparty</p></div>
+    <div class="stage-box"><div class="icon">⚖</div><h3>Clear</h3><p class="small">Novation at the CCP</p></div>
+    <div class="stage-box"><div class="icon">✓</div><h3>Settle</h3><p class="small">DvP on T+1</p></div>
+  </div>
+  <div class="track reveal"><i id="bar"></i></div>
+  <div class="bottom">
+    <div class="card cue reveal"><p class="eyebrow">Presenter cue · only you see this in rehearsal</p><div class="say" id="say"></div></div>
+    <div class="card reveal"><p class="eyebrow">Trade event log</p><div class="log" id="log"></div></div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const t = FISDeck.data('trade', { id: 'T-48213', side: 'BUY', quantity: '50,000', instrument: 'XYZ', price: '41.20', counterpartyPrice: '41.21' });
+  const esc = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const steps = [
+    { cue: `Start simple: “A ${esc(t.side.toLowerCase())} of ${esc(t.quantity)} ${esc(t.instrument)} is booked at 10:02.” Let the room settle on one trade.`, log: `<b>10:02:14</b> Trade ${esc(t.id)} captured · ${esc(t.side)} ${esc(t.quantity)} ${esc(t.instrument)} @ ${esc(t.price)}` },
+    { cue: 'Point out what <em>didn\'t</em> happen: no one re-keyed settlement instructions.', log: '<b>10:02:15</b> Enriched · SSI, ISIN, settlement venue resolved' },
+    { cue: 'Pause here. “This is where breaks usually start.” Show the exception, then the suggested fix.', log: `<span class="warn">10:02:41 Mismatch · counterparty price ${esc(t.counterpartyPrice)} — tolerance rule suggests affirm</span><br><b>10:02:58</b> Affirmed by counterparty`, alert: true },
+    { cue: 'Connect to risk: “Novation removes counterparty exposure — visible in real time.”', log: '<b>10:05:30</b> Cleared · novated to CCP, margin updated' },
+    { cue: 'Close the loop with their pain point from the opening: T+1 without overtime.', log: '<b>T+1 09:00</b> Settled · DvP confirmed, positions reconciled' }
+  ];
+  const boxes = [...document.querySelectorAll('.stage-box')], say = document.getElementById('say'), log = document.getElementById('log'), bar = document.getElementById('bar');
+  let index = 0;
+  function render() {
+    boxes.forEach((b, i) => { b.classList.toggle('active', i === index); b.classList.toggle('passed', i < index); b.classList.toggle('alert', i === index && !!steps[i].alert); });
+    bar.style.width = ((index + 1) / steps.length * 100) + '%';
+    say.innerHTML = steps[index].cue;
+    log.innerHTML = steps.slice(0, index + 1).map(s => s.log).join('<br>');
+    log.scrollTop = log.scrollHeight;
+  }
+  document.getElementById('next').addEventListener('click', () => { index = Math.min(steps.length - 1, index + 1); render(); });
+  document.getElementById('back').addEventListener('click', () => { index = Math.max(0, index - 1); render(); });
+  boxes.forEach((b, i) => b.addEventListener('click', () => { index = i; render(); }));
+  render();
+});
+</script>
+</body>
+</html>

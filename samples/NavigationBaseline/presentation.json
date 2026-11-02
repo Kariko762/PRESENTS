@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0",
+  "id": "fis-navigation-baseline",
+  "name": "Plain HTML Navigation Baseline",
+  "description": "Two link-only HTML documents with no scripts, styles or assets. Compare direct links and native navigation in the same WebView2 instance.",
+  "version": "1.1.0",
+  "entryPoint": "index.html",
+  "catalog": { "product": "Runtime Diagnostics", "functions": ["Navigation testing"], "tags": ["Example demo", "Plain HTML", "Offline"], "coverImage": "" },
+  "navigation": {
+    "enabled": true,
+    "sections": [{ "id": "baseline", "title": "Plain HTML Baseline", "pages": [
+      { "id": "first", "title": "Page one", "path": "index.html" },
+      { "id": "second", "title": "Page two", "path": "second.html" }
+    ] }]
+  }
+}

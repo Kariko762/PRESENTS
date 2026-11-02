@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Digital Advantage</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .series { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .series .card { padding: 16px 18px; } .series .card.current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .series b { display: block; font-size: 15px; margin: 4px 0; }
+  .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .pillars .card { text-align: left; }
+  .pillars .kpi { font-size: 28px; color: var(--accent); }
+</style>
+</head>
+<body data-demo="The Digital Advantage" data-chapter="Opening" data-page="1" data-pages="6" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <section class="hero">
+    <p class="eyebrow reveal">Demo 2 of 3 · Why it matters</p>
+    <h1 class="reveal">The <em>digital</em> advantage.</h1>
+    <p class="lede reveal">Demo 1 showed what we can design. This demo answers the harder question: <em>why bother?</em> Using digital account opening as our example, we compare static and digital content across the four things that decide a pre-sales meeting.</p>
+    <div class="pillars">
+      <div class="card reveal"><div class="kpi">01</div><h3>Clarity</h3><p class="small">Show, don't describe</p></div>
+      <div class="card reveal"><div class="kpi">02</div><h3>Currency</h3><p class="small">Always the latest version</p></div>
+      <div class="card reveal"><div class="kpi">03</div><h3>Confidence</h3><p class="small">Works anywhere, verified</p></div>
+      <div class="card reveal"><div class="kpi">04</div><h3>Impact</h3><p class="small">Less prep, more selling</p></div>
+    </div>
+    <div class="series reveal">
+      <div class="card"><span class="eyebrow" style="color:var(--green)">01</span><b>Designed for Digital</b><p class="small">What we can design</p></div>
+      <div class="card current"><span class="eyebrow">02 · You are here</span><b>The Digital Advantage</b><p class="small">Why it matters</p></div>
+      <div class="card"><span class="eyebrow" style="color:var(--lime)">03</span><b>Confident, Repeatable Delivery</b><p class="small">How consultants use it</p></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

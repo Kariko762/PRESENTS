@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One brand kit</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .kit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; flex: 1; }
+  .ring { width: 120px; height: 120px; }
+  .ring circle { fill: none; stroke-width: 10; }
+  .timeline { display: flex; justify-content: space-between; position: relative; margin-top: 18px; }
+  .timeline::before { content: ""; position: absolute; left: 8px; right: 8px; top: 7px; height: 2px; background: var(--line); }
+  .timeline span { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .timeline span::before { content: ""; width: 16px; height: 16px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent); }
+  .timeline span.done::before { background: var(--accent); }
+  .swatches { display: flex; gap: 8px; } .swatches i { width: 34px; height: 34px; border-radius: 8px; }
+</style>
+</head>
+<body data-demo="Designed for Digital" data-chapter="One brand kit" data-page="5" data-pages="6">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="row" style="justify-content:space-between">
+    <div><p class="eyebrow reveal">Capability 4 · Components</p><h2 class="reveal">One brand kit. <em>Every</em> demo.</h2></div>
+    <div class="row reveal"><span class="small">Re-skin by business line:</span>
+      <div class="segmented" role="group"><button data-skin="" aria-pressed="true">Payments</button><button data-skin="teal" aria-pressed="false">Banking</button><button data-skin="lime" aria-pressed="false">Capital Markets</button></div></div>
+  </div>
+  <p class="lede reveal">Everything you have seen is built from the same shared components. New demos start at 80% done, look unmistakably FIS, and change business-line accent with a single attribute.</p>
+  <div class="kit">
+    <div class="card reveal"><p class="eyebrow">KPI tile</p><div class="kpi" style="margin-top:12px"><span data-count="99.7" data-decimals="1">0</span><small>%</small></div><p class="small" style="margin-top:8px">Animated on entry · any metric</p></div>
+    <div class="card reveal" style="display:flex;gap:18px;align-items:center">
+      <svg class="ring" viewBox="0 0 120 120"><circle cx="60" cy="60" r="48" stroke="#2a3b4a"/><circle id="ring" cx="60" cy="60" r="48" stroke="var(--accent)" stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="301.6" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)"/></svg>
+      <div><p class="eyebrow">Progress ring</p><p class="small">Readiness, adoption, completion</p></div></div>
+    <div class="card reveal"><p class="eyebrow">Chips &amp; labels</p><div class="row" style="margin-top:12px"><span class="chip">Real-time</span><span class="chip">ISO 20022</span><span class="chip neutral">24/7/365</span><span class="chip neutral">Cloud native</span></div></div>
+    <div class="card reveal"><p class="eyebrow">Timeline</p><div class="timeline"><span class="done">Discover</span><span class="done">Design</span><span class="done">Build</span><span>Launch</span></div></div>
+    <div class="card reveal"><p class="eyebrow">Callout</p><p class="callout" style="margin-top:12px">“This is exactly the experience our customers expect.”</p></div>
+    <div class="card reveal"><p class="eyebrow">Palette</p><div class="swatches" style="margin-top:12px"><i style="background:#4bcd3e"></i><i style="background:#69e43c"></i><i style="background:#43cebd"></i><i style="background:#c6e65b"></i><i style="background:#101925;border:1px solid #2a3b4a"></i></div><p class="small" style="margin-top:10px">Shared tokens keep every demo on brand</p></div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const ring = document.getElementById('ring');
+  setTimeout(() => ring.style.strokeDashoffset = String(301.6 * (1 - .82)), 500);
+  document.querySelectorAll('[data-skin]').forEach(button => button.addEventListener('click', () => {
+    if (button.dataset.skin) document.body.dataset.accent = button.dataset.skin; else delete document.body.dataset.accent;
+    document.querySelectorAll('[data-skin]').forEach(other => other.setAttribute('aria-pressed', String(other === button)));
+  }));
+});
+</script>
+</body>
+</html>

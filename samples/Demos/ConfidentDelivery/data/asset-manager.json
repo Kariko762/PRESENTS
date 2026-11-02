@@ -1,0 +1,12 @@
+{
+  "persona": "COO, Investment Operations",
+  "institution": "an asset manager",
+  "trade": {
+    "id": "T-77104",
+    "side": "SELL",
+    "quantity": "1,200,000",
+    "instrument": "UST 4.25% 2034",
+    "price": "99.18",
+    "counterpartyPrice": "99.19"
+  }
+}

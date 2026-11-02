@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Always current</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; flex: 1; }
+  .versions { display: flex; flex-direction: column; gap: 10px; }
+  .ver { display: grid; grid-template-columns: 90px 1fr auto; gap: 14px; align-items: center; padding: 12px 16px; border-radius: 10px; background: #15212e; border: 1px solid var(--line); opacity: .45; transition: all .5s; }
+  .ver.live { opacity: 1; border-color: var(--accent); }
+  .ver b { color: var(--accent); font-size: 18px; }
+  .fleet { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; margin-top: 14px; }
+  .fleet i { aspect-ratio: 1; border-radius: 50%; background: #2a3b4a; transition: background .4s; }
+  .fleet i.on { background: var(--accent); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 60%, transparent); }
+</style>
+</head>
+<body data-demo="The Digital Advantage" data-chapter="Always current" data-page="3" data-pages="6" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="row" style="justify-content:space-between">
+    <div><p class="eyebrow reveal">Advantage 2 · Currency</p><h2 class="reveal">Publish once. <em>Everyone</em> is current.</h2></div>
+    <button class="primary reveal" id="publish">Publish v1.2 ▶</button>
+  </div>
+  <p class="lede reveal">Every demo is versioned in the repository. When a new version is published, consultants are prompted on start — one click and the update is downloaded, verified and ready.</p>
+  <div class="layout">
+    <div class="card reveal">
+      <p class="eyebrow">Version history</p>
+      <div class="versions" style="margin-top:12px">
+        <div class="ver live"><b>v1.0</b><span>Launch story · onboarding journey</span><span class="chip neutral">Jan</span></div>
+        <div class="ver live"><b>v1.1</b><span>New regulation: digital ID wallet</span><span class="chip neutral">Mar</span></div>
+        <div class="ver" id="v12"><b>v1.2</b><span>Customer proof point added</span><span class="chip">Today</span></div>
+      </div>
+    </div>
+    <div class="card reveal">
+      <p class="eyebrow">Consultants on the latest version</p>
+      <div class="kpi" style="margin-top:10px"><span id="pct">100</span><small>%</small></div>
+      <div class="fleet" id="fleet"></div>
+      <p class="small" style="margin-top:12px" id="note">No more “which deck is the latest?”</p>
+    </div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const fleet = document.getElementById('fleet'), pct = document.getElementById('pct'), note = document.getElementById('note');
+  const dots = Array.from({ length: 40 }, () => { const i = document.createElement('i'); i.className = 'on'; fleet.appendChild(i); return i; });
+  let timer = null;
+  document.getElementById('publish').addEventListener('click', () => {
+    clearInterval(timer);
+    document.getElementById('v12').classList.add('live');
+    dots.forEach(d => d.classList.remove('on')); pct.textContent = '0'; note.textContent = 'v1.2 published — consultants accept the update on start…';
+    const order = dots.map((_, i) => i).sort(() => Math.random() - .5); let n = 0;
+    timer = setInterval(() => {
+      for (let k = 0; k < 3 && n < order.length; k++, n++) dots[order[n]].classList.add('on');
+      pct.textContent = String(Math.round(n / dots.length * 100));
+      if (n >= order.length) { clearInterval(timer); note.textContent = 'Everyone presenting v1.2 — the same story, everywhere.'; }
+    }, 120);
+  });
+});
+</script>
+</body>
+</html>

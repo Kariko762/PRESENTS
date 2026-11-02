@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Works anywhere</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .checks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; flex: 1; }
+  .check { display: flex; gap: 16px; align-items: center; }
+  .check .state { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: 2px solid #2a3b4a; color: var(--muted); font-weight: 700; transition: all .4s; flex: none; }
+  .check.ok .state { border-color: var(--accent); background: var(--accent); color: #062019; }
+  .check.run .state { border-color: var(--accent); animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 20%, transparent); } }
+  code { color: var(--accent); font-size: 12px; word-break: break-all; }
+</style>
+</head>
+<body data-demo="The Digital Advantage" data-chapter="Works anywhere" data-page="4" data-pages="6" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="row" style="justify-content:space-between">
+    <div><p class="eyebrow reveal">Advantage 3 · Confidence</p><h2 class="reveal">No Wi-Fi? No problem. <em>It just runs.</em></h2></div>
+    <button class="primary reveal" id="run">Run pre-meeting checks ▶</button>
+  </div>
+  <p class="lede reveal">Demos are self-contained packages stored on the consultant's PC. Before every meeting the platform proves the demo is complete, untampered and ready — so nothing surprises you in the room.</p>
+  <div class="checks">
+    <div class="card check reveal"><div class="state">1</div><div><h3>Offline package</h3><p class="small">All pages, styles and media are inside the package. No network calls.</p></div></div>
+    <div class="card check reveal"><div class="state">2</div><div><h3>Integrity verified</h3><p class="small">SHA-256 <code id="hash">…</code></p></div></div>
+    <div class="card check reveal"><div class="state">3</div><div><h3>No install, no admin</h3><p class="small">Runs from the local cache in an isolated, read-only player.</p></div></div>
+    <div class="card check reveal"><div class="state">4</div><div><h3>Version stamped</h3><p class="small">Presenting <b id="ver">v1.0.0</b> — matches the repository.</p></div></div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const info = window.FIS_DEMO || {};
+  document.getElementById('ver').textContent = 'v' + (info.version || '1.0.0');
+  const hex = () => Array.from({ length: 64 }, () => '0123456789abcdef'[Math.random() * 16 | 0]).join('');
+  document.getElementById('hash').textContent = hex();
+  document.getElementById('run').addEventListener('click', () => {
+    const checks = [...document.querySelectorAll('.check')];
+    checks.forEach(c => { c.classList.remove('ok', 'run'); c.querySelector('.state').textContent = c.querySelector('.state').dataset.n || c.querySelector('.state').textContent; });
+    checks.forEach((c, i) => {
+      const s = c.querySelector('.state'); s.dataset.n = s.dataset.n || s.textContent;
+      setTimeout(() => c.classList.add('run'), i * 700);
+      setTimeout(() => { c.classList.remove('run'); c.classList.add('ok'); s.textContent = '✓'; }, i * 700 + 650);
+    });
+  });
+});
+</script>
+</body>
+</html>

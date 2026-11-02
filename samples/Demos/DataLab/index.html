@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Data Lab</title>
+<link rel="stylesheet" href="shared/brand.css">
+<link rel="stylesheet" href="lab.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<script defer src="lab.js"></script>
+<style>
+  .opening { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(18px, 3vw, 40px); flex: 1; align-items: center; }
+  .opening h1 { font-size: clamp(30px, 3.8vw, 52px); }
+  .opening .lede { font-size: 15px; margin: 10px 0 14px; }
+  .keys { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .keys td { padding: 6px 8px; border-bottom: 1px solid #22344a; }
+  .keys td:first-child { font-family: "Cascadia Code", Consolas, monospace; color: var(--accent); }
+  .keys td:nth-child(2) { color: var(--dim); } .keys td:last-child { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .meter { height: 8px; border-radius: 5px; background: #203142; overflow: hidden; position: relative; margin-top: 8px; }
+  .meter i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 5px; transition: width 1s var(--ease); width: 0; }
+  .meter b { position: absolute; top: -3px; bottom: -3px; width: 2px; background: #ffc45c; }
+  .pages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .pages .card { padding: 8px 12px; display: flex; gap: 8px; align-items: baseline; } .pages b { font-size: 12.5px; }
+</style>
+</head>
+<body data-demo="Data Lab" data-chapter="Opening · what the page received" data-page="1" data-pages="8" data-accent="teal">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="opening">
+    <section class="hero" style="max-width:none">
+      <p class="eyebrow reveal">Data Lab · Trade Lifecycle Manager</p>
+      <h1 class="reveal"><span data-fis-field="client.shortName">Your client</span>. <em data-fis-field="headline">Every trade, every stage, one view.</em></h1>
+      <p class="lede reveal">One demo, many data sets. Every number on the next seven pages comes from the data set picked on the start dialog — swap the persona and the same pages tell a different client's story. This page shows exactly what the page received.</p>
+      <div class="pages reveal">
+        <div class="card"><span class="eyebrow">02</span><b>KPIs &amp; formats</b></div>
+        <div class="card"><span class="eyebrow">03</span><b>Trade blotter</b></div>
+        <div class="card"><span class="eyebrow">04</span><b>Positions</b></div>
+        <div class="card"><span class="eyebrow">05</span><b>Time series</b></div>
+        <div class="card"><span class="eyebrow">06</span><b>Exceptions</b></div>
+        <div class="card"><span class="eyebrow">07</span><b>History file</b></div>
+        <div class="card"><span class="eyebrow">08</span><b>Limits lab</b></div>
+        <div class="card" data-lab-status style="display:flex;align-items:center"></div>
+      </div>
+    </section>
+    <section class="card reveal" style="display:flex;flex-direction:column;gap:12px;max-height:100%;min-height:0">
+      <div class="lab-head"><div><p class="eyebrow">Data inspector</p><h3 id="set-name" style="margin-top:4px">No data set</h3></div><span class="chip neutral" id="persona">—</span></div>
+      <dl class="kv">
+        <dt>Data set id</dt><dd class="mono" id="set-id">—</dd>
+        <dt>Client</dt><dd id="client">—</dd>
+        <dt>Locale · currency</dt><dd id="locale">—</dd>
+        <dt>Injected size</dt><dd id="size">—</dd>
+      </dl>
+      <div>
+        <div class="meter"><i id="meter"></i><b style="left:25%" title="256 KB recommended"></b></div>
+        <p class="small" style="margin-top:6px">Bar = share of the 1 MB inline limit · amber line = 256 KB recommendation</p>
+      </div>
+      <div style="overflow:auto;min-height:0;flex:1"><table class="keys"><tbody id="keys"></tbody></table></div>
+    </section>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { deck, context, el, kb } = Lab;
+  Lab.status();
+  const data = context.data || {};
+  document.getElementById('set-name').textContent = context.dataSetName || 'No data set';
+  document.getElementById('persona').textContent = context.persona || 'No persona';
+  document.getElementById('set-id').textContent = context.dataSet || '—';
+  document.getElementById('client').textContent = deck.data('client.name', '—');
+  document.getElementById('locale').textContent = `${deck.format.locale} · ${deck.format.currency}`;
+  const bytes = context.dataBytes || 0;
+  document.getElementById('size').textContent = bytes ? `${kb(bytes)} — injected into every page as FIS_DEMO_CONTEXT.data` : 'Nothing injected';
+  setTimeout(() => document.getElementById('meter').style.width = `${Math.min(100, bytes / 1048576 * 100)}%`, 400);
+  const describe = value => Array.isArray(value) ? ['array', `${value.length.toLocaleString()} rows`]
+    : value === null ? ['null', '']
+    : typeof value === 'object' ? ['object', `${Object.keys(value).length} keys`]
+    : [typeof value, String(value).length > 28 ? String(value).slice(0, 28) + '…' : String(value)];
+  const rows = Object.entries(data).map(([key, value]) => { const [kind, detail] = describe(value); return el('tr', {}, el('td', { text: key }), el('td', { text: kind }), el('td', { text: detail })); });
+  Object.entries(context.files || {}).forEach(([key, path]) => rows.push(el('tr', {}, el('td', { text: `$files.${key}` }), el('td', { text: 'file (lazy)' }), el('td', { text: path }))));
+  document.getElementById('keys').replaceChildren(...(rows.length ? rows : [el('tr', {}, el('td', { text: '(empty)', colspan: 3 }))]));
+});
+</script>
+</body>
+</html>

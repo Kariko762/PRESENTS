@@ -1,0 +1,12 @@
+{
+  "persona": "Head of Settlements",
+  "institution": "a global custodian",
+  "trade": {
+    "id": "T-90552",
+    "side": "BUY",
+    "quantity": "250,000",
+    "instrument": "ABC Corp",
+    "price": "12.84",
+    "counterpartyPrice": "12.85"
+  }
+}

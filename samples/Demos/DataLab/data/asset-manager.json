@@ -1,0 +1,16 @@
+{
+  "$extends": "data/tier1-bank.json",
+  "client": {
+    "name": "Kestrel Asset Management",
+    "shortName": "Kestrel",
+    "segment": "Asset manager"
+  },
+  "persona": "COO, Investment Operations",
+  "locale": "en-GB",
+  "currency": "GBP",
+  "headline": "Confidence from order to settlement.",
+  "kpis": {
+    "tradesToday": 2140,
+    "openBreaks": 6
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "id": "fis-data-lab",
+  "name": "Data Lab",
+  "description": "Data-driven demo and test bench. Eight pages show how one demo renders tables, grouped positions, time series, joined exceptions and a lazily loaded trade history from five interchangeable data sets — and measures where the limits are.",
+  "version": "1.0.0",
+  "entryPoint": "index.html",
+  "branding": {
+    "accentColor": "#43CEBD",
+    "logo": "shared/fis-logo.png"
+  },
+  "catalog": {
+    "product": "Trade Lifecycle Manager",
+    "functions": [
+      "Data sets",
+      "Trade data",
+      "Performance testing"
+    ],
+    "tags": [
+      "Data-driven",
+      "Branded",
+      "Test bench"
+    ],
+    "coverImage": "",
+    "organization": {
+      "l3": "Capital Markets",
+      "l4": "Trading & Processing",
+      "l5": "Post-Trade",
+      "l6": "Clearing & Settlement",
+      "l7": "Trade Lifecycle",
+      "l8": "Trade Lifecycle Manager"
+    }
+  },
+  "navigation": {
+    "enabled": true,
+    "sections": [
+      {
+        "id": "overview",
+        "title": "Overview",
+        "pages": [
+          { "id": "opening", "title": "What the page received", "path": "index.html" },
+          { "id": "kpis", "title": "KPIs & formats", "path": "kpis.html" }
+        ]
+      },
+      {
+        "id": "data",
+        "title": "Data shapes",
+        "pages": [
+          { "id": "blotter", "title": "Trade blotter", "path": "blotter.html" },
+          { "id": "positions", "title": "Positions", "path": "positions.html" },
+          { "id": "timeseries", "title": "Time series", "path": "timeseries.html" },
+          { "id": "exceptions", "title": "Exceptions", "path": "exceptions.html" }
+        ]
+      },
+      {
+        "id": "scale",
+        "title": "Scale",
+        "pages": [
+          { "id": "history", "title": "History file", "path": "history.html" },
+          { "id": "limits", "title": "Limits lab", "path": "limits.html" }
+        ]
+      }
+    ]
+  },
+  "dataSets": [
+    {
+      "id": "tier1-bank",
+      "name": "Tier 1 bank",
+      "persona": "Head of Trade Operations",
+      "description": "Base data set: 400 trades, 6 desks, 260-day series, exceptions with lifecycle events and a 20,000-row CSV history.",
+      "file": "data/tier1-bank.json",
+      "default": true
+    },
+    {
+      "id": "regional-broker",
+      "name": "Regional broker (DE)",
+      "persona": "Leiter Wertpapierabwicklung",
+      "description": "Extends Tier 1 bank: own trades, positions and exceptions in EUR / de-DE; inherits the series and history file.",
+      "file": "data/regional-broker.json",
+      "default": false
+    },
+    {
+      "id": "asset-manager",
+      "name": "Asset manager (UK)",
+      "persona": "COO, Investment Operations",
+      "description": "Extends Tier 1 bank with a 15-line override: new client, GBP / en-GB and two KPIs. Everything else is inherited.",
+      "file": "data/asset-manager.json",
+      "default": false
+    },
+    {
+      "id": "stress-test",
+      "name": "Stress test",
+      "persona": "Performance tester",
+      "description": "Near the limits: 2,600 inline trades (~900 KB), 1,000-point series, 180 exceptions and a 100,000-row CSV history.",
+      "file": "data/stress-test.json",
+      "default": false
+    },
+    {
+      "id": "edge-cases",
+      "name": "Edge cases",
+      "persona": "QA reviewer",
+      "description": "Nulls, blanks, negative and zero values, long unicode names, HTML in text and empty arrays — every page should degrade gracefully.",
+      "file": "data/edge-cases.json",
+      "default": false
+    }
+  ]
+}

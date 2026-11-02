@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Static versus digital</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .compare { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; flex: 1; min-height: 0; }
+  .frame { border-radius: 12px; border: 1px solid var(--line); background: #0e1823; padding: 22px; min-height: 300px; position: relative; overflow: hidden; }
+  .slide { background: #e9ecef; color: #333; border-radius: 6px; padding: 26px 30px; font-family: Calibri, "Segoe UI", sans-serif; height: 100%; }
+  .slide h4 { margin: 0 0 14px; font-size: 22px; color: #1f3b57; } .slide li { margin: 8px 0; font-size: 15px; }
+  .phone { width: 250px; margin: 0 auto; border-radius: 28px; border: 2px solid #2a3b4a; background: #0b1622; padding: 18px 16px; min-height: 300px; }
+  .phone .step { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; background: #15212e; font-size: 13px; color: var(--muted); transition: all .4s; }
+  .phone .step b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #2a3b4a; color: var(--text); font-size: 11px; transition: all .4s; }
+  .phone .step.on { color: var(--text); background: color-mix(in srgb, var(--accent) 14%, #15212e); } .phone .step.on b { background: var(--accent); color: #062019; }
+  .phone .done { text-align: center; margin-top: 14px; font-weight: 700; color: var(--accent); opacity: 0; transition: opacity .5s; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  td, th { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; } th { color: var(--dim); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+  td.no { color: #ff8b7d; } td.yes { color: var(--accent); font-weight: 700; }
+  tr { transition: background .3s; } tr.lit { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+</style>
+</head>
+<body data-demo="The Digital Advantage" data-chapter="Static versus digital" data-page="2" data-pages="6" data-accent="teal">
+<main class="stage" data-tabs="mode">
+  <canvas class="backdrop"></canvas>
+  <div class="row" style="justify-content:space-between">
+    <div><p class="eyebrow reveal">Advantage 1 · Clarity</p><h2 class="reveal">Static describes. <em>Digital demonstrates.</em></h2></div>
+    <div class="segmented reveal" role="tablist"><button data-tab="static">Static slide</button><button data-tab="digital" aria-selected="true">Digital demo</button></div>
+  </div>
+  <div class="compare reveal">
+    <div class="frame">
+      <div class="slide" data-panel="static" hidden>
+        <h4>Digital Account Opening – Key Features</h4>
+        <ul><li>Fast onboarding process (under 5 minutes)</li><li>Identity verification integrated</li><li>Mobile-first experience</li><li>Real-time decisioning</li><li>Account funded on day one</li></ul>
+        <p style="color:#888;font-size:12px;margin-top:22px">Slide 14 of 62 · Version: final_v7_UPDATED (2).pptx</p>
+      </div>
+      <div data-panel="digital">
+        <div class="phone">
+          <p class="small" style="text-align:center;margin-bottom:12px">Open an account</p>
+          <div class="step"><b>1</b>Tell us about you</div>
+          <div class="step"><b>2</b>Scan your ID</div>
+          <div class="step"><b>3</b>Selfie liveness check</div>
+          <div class="step"><b>4</b>Instant decision</div>
+          <div class="step"><b>5</b>Fund your account</div>
+          <div class="done">✓ Account open · 4 min 12 s</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="overflow:auto">
+      <table>
+        <tr><th>What the buyer needs</th><th>Static</th><th>Digital</th></tr>
+        <tr><td>See the actual experience</td><td class="no">Described</td><td class="yes">Shown</td></tr>
+        <tr><td>Explore their own question</td><td class="no">Follow-up</td><td class="yes">Live</td></tr>
+        <tr><td>Remember it afterwards</td><td class="no">Bullet 3 of 5</td><td class="yes">The moment</td></tr>
+        <tr><td>Trust it is current</td><td class="no">final_v7 (2)</td><td class="yes">v-tracked</td></tr>
+        <tr><td>Same story from every consultant</td><td class="no">Varies</td><td class="yes">Identical</td></tr>
+      </table>
+    </div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let timer = null;
+  const steps = [...document.querySelectorAll('.phone .step')], done = document.querySelector('.phone .done');
+  const rows = [...document.querySelectorAll('tr')].slice(1);
+  function play() {
+    clearInterval(timer); steps.forEach(s => s.classList.remove('on')); done.style.opacity = 0; rows.forEach(r => r.classList.remove('lit'));
+    let i = 0;
+    timer = setInterval(() => {
+      if (i < steps.length) { steps[i].classList.add('on'); if (rows[i]) rows[i].classList.add('lit'); i++; }
+      else { done.style.opacity = 1; clearInterval(timer); }
+    }, 900);
+  }
+  FISDeck.onTab((group, key) => { if (key === 'digital') play(); else { clearInterval(timer); rows.forEach(r => r.classList.remove('lit')); } });
+});
+</script>
+</body>
+</html>

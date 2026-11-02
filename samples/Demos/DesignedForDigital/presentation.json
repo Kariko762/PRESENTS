@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "id": "fis-designed-for-digital",
+  "name": "Designed for Digital",
+  "description": "Demo 1 of 3 · What we can design. Motion that explains, data you can touch, scenarios that adapt in the room and a shared brand kit — told through a real-time payment journey.",
+  "version": "1.0.0",
+  "entryPoint": "index.html",
+  "branding": {
+    "accentColor": "#4BCD3E",
+    "logo": "shared/fis-logo.png"
+  },
+  "catalog": {
+    "product": "Instant Payments Hub",
+    "functions": [
+      "Digital content design",
+      "Interactive storytelling"
+    ],
+    "tags": [
+      "Story 1 of 3",
+      "Branded",
+      "Offline"
+    ],
+    "coverImage": "",
+    "organization": {
+      "l3": "Payments",
+      "l4": "Money Movement",
+      "l5": "Real-Time Payments",
+      "l6": "Payment Orchestration",
+      "l7": "Payment Journey",
+      "l8": "Instant Payments Hub"
+    }
+  },
+  "navigation": {
+    "enabled": true,
+    "sections": [
+      {
+        "id": "story",
+        "title": "Designed for Digital",
+        "pages": [
+          {
+            "id": "opening",
+            "title": "Designed for digital",
+            "path": "index.html"
+          },
+          {
+            "id": "motion",
+            "title": "Motion that explains",
+            "path": "journey.html"
+          },
+          {
+            "id": "data",
+            "title": "Data you can touch",
+            "path": "data.html"
+          },
+          {
+            "id": "scenarios",
+            "title": "Scenarios on demand",
+            "path": "scenarios.html"
+          },
+          {
+            "id": "components",
+            "title": "One brand kit",
+            "path": "components.html"
+          },
+          {
+            "id": "summary",
+            "title": "What we can design",
+            "path": "summary.html"
+          }
+        ]
+      }
+    ]
+  },
+  "dataSets": [
+    {
+      "id": "regional-bank",
+      "name": "Regional retail bank",
+      "persona": "Head of Payments",
+      "description": "1.2M instant payments a day with a retail evening peak.",
+      "file": "data/regional-bank.json",
+      "default": true
+    },
+    {
+      "id": "payroll-bureau",
+      "name": "Payroll bureau",
+      "persona": "Chief Operating Officer",
+      "description": "3.4M payments a day concentrated in a morning payroll run.",
+      "file": "data/payroll-bureau.json",
+      "default": false
+    },
+    {
+      "id": "credit-union",
+      "name": "Credit union",
+      "persona": "Chief Information Officer",
+      "description": "300K payments a day; modernising from batch to real time.",
+      "file": "data/credit-union.json",
+      "default": false
+    }
+  ]
+}

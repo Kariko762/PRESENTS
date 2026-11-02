@@ -1,0 +1,10 @@
+# Build output
+bin/
+obj/
+dist/
+TestResults/
+*.user
+.vs/
+
+# Temporary build projects (WPF)
+*_wpftmp.csproj

@@ -1,0 +1,23 @@
+{
+  "client": {
+    "name": "Example Bank plc",
+    "shortName": "Example Bank",
+    "segment": "Tier 2 bank",
+    "region": "EMEA"
+  },
+  "locale": "en-GB",
+  "currency": "GBP",
+  "headline": "One view of every payment, every day.",
+  "kpis": {
+    "paymentsToday": 184000,
+    "stpRate": 0.962,
+    "valueToday": 2450000000,
+    "openExceptions": 12
+  },
+  "accounts": [
+    { "id": "ACC-001", "name": "Operating account", "type": "Current", "balance": 12500000, "status": "Active" },
+    { "id": "ACC-002", "name": "Payroll account", "type": "Current", "balance": 4300000, "status": "Active" },
+    { "id": "ACC-003", "name": "Treasury reserve", "type": "Deposit", "balance": 88000000, "status": "Active" },
+    { "id": "ACC-004", "name": "Legacy collections", "type": "Current", "balance": -25000, "status": "Review" }
+  ]
+}

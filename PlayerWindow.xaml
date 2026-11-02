@@ -1,0 +1,66 @@
+﻿<Window x:Class="FisPresentationPlatform.PlayerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:controls="clr-namespace:FisPresentationPlatform.Controls"
+        Title="FIS Presentation Player" Icon="pack://application:,,,/FisPresentationPlatform;component/Assets/fis-presents.ico" Height="850" Width="1400" MinHeight="640" MinWidth="960"
+        WindowStartupLocation="CenterOwner" Background="#101925" Foreground="#F3F6F8" PreviewKeyDown="PlayerWindow_PreviewKeyDown">
+    <Grid>
+        <Grid.RowDefinitions><RowDefinition Height="72"/><RowDefinition Height="*"/><RowDefinition Height="58"/></Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="#101925" BorderBrush="#414748" BorderThickness="0,0,0,1">
+            <Grid Margin="24,0">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border x:Name="BrandMark" Width="42" Height="34" CornerRadius="9" Background="#286D27" Margin="0,0,12,0">
+                        <Grid>
+                            <TextBlock x:Name="BrandLetter" Text="FIS" Foreground="White" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Image x:Name="BrandLogo" Visibility="Collapsed" Stretch="UniformToFill" />
+                        </Grid>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock x:Name="PresentationTitle" Text="Presentation" FontSize="17" FontWeight="SemiBold" />
+                        <TextBlock x:Name="PresentationVersion" Text="Version 1.0.0" FontSize="11" Foreground="#93A2B0" Margin="0,2,0,0" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Home" Click="Home_Click" Margin="0,0,8,0" />
+                    <Button Content="Diagnostics" Click="ExportDiagnostics_Click" Margin="0,0,8,0" />
+                    <Button x:Name="ToggleNavigationButton" Content="Hide menu" Click="ToggleNavigation_Click" Margin="0,0,8,0" />
+                    <Button x:Name="FullscreenButton" Content="Fullscreen" Click="Fullscreen_Click" Margin="0,0,8,0" />
+                    <Button Content="Close player" Click="ClosePlayer_Click" VerticalAlignment="Center" Margin="0" />
+                </StackPanel>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions><ColumnDefinition x:Name="NavigationColumn" Width="250"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+            <Border x:Name="NavigationPane" Grid.Column="0" Background="#101925" BorderBrush="#414748" BorderThickness="0,0,1,0">
+                <DockPanel LastChildFill="True">
+                    <TextBlock DockPanel.Dock="Top" Text="PRESENTATION MENU" Foreground="#69E43C" FontSize="10" FontWeight="Bold" Margin="20,22,10,14" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="NavigationPanel" Margin="12,0,12,16" />
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+            <Grid Grid.Column="1" Background="#101925">
+                <wv2:WebView2 x:Name="Browser" />
+                <controls:DemoLoadingView x:Name="DemoLoader" />
+                <Border x:Name="PlayerErrorPanel" Visibility="Collapsed" Background="#101925" Padding="36">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="680">
+                        <TextBlock Text="This presentation could not be opened" FontSize="26" FontWeight="SemiBold" />
+                        <TextBlock x:Name="PlayerErrorText" Text="" Foreground="#B8C6D0" TextWrapping="Wrap" Margin="0,12,0,0" />
+                        <Button Content="Retry current page" Click="RetryPage_Click" HorizontalAlignment="Left" Margin="0,18,0,0" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+        <Border Grid.Row="2" Background="#101925" BorderBrush="#414748" BorderThickness="0,1,0,0">
+            <Grid Margin="20,0">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <TextBlock x:Name="PageStatus" Text="Preparing presentation…" Foreground="#93A2B0" FontSize="12" VerticalAlignment="Center" />
+                <ProgressBar x:Name="ProgressBar" Grid.Column="1" Height="4" Maximum="100" Value="0" VerticalAlignment="Center" Margin="26,0" Background="#263541" BorderThickness="0" />
+                <Button x:Name="PreviousButton" Grid.Column="2" Content="← Previous" Click="Previous_Click" Margin="0,0,8,0" Height="36" Padding="16,0" VerticalAlignment="Center" />
+                <Button x:Name="NextButton" Grid.Column="3" Content="Next →" Click="Next_Click" Margin="0" Height="36" Padding="16,0" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

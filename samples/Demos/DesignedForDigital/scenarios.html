@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scenarios on demand</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .persona { display: grid; grid-template-columns: 280px 1fr; gap: 18px; flex: 1; }
+  .avatar { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; font-size: 34px; background: color-mix(in srgb, var(--accent) 18%, transparent); border: 2px solid var(--accent); margin-bottom: 14px; }
+  .moments { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .moments .card { animation: rise .5s var(--ease) both; }
+  .moments .card:nth-child(2) { animation-delay: .08s; } .moments .card:nth-child(3) { animation-delay: .16s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+</style>
+</head>
+<body data-demo="Designed for Digital" data-chapter="Scenarios on demand" data-page="4" data-pages="6">
+<main class="stage" data-tabs="persona">
+  <canvas class="backdrop"></canvas>
+  <div class="row" style="justify-content:space-between">
+    <div><p class="eyebrow reveal">Capability 3 · Adaptation</p><h2 class="reveal">Scenarios <em>on demand</em> — one demo, many audiences.</h2></div>
+    <div class="segmented reveal" role="tablist">
+      <button data-tab="treasurer" aria-selected="true">Corporate treasurer</button>
+      <button data-tab="smb">Small business</button>
+      <button data-tab="consumer">Consumer</button>
+    </div>
+  </div>
+  <p class="lede reveal">Switch the audience and the story follows. Same approved content, same brand — the consultant chooses the lens that matches the person in the room.</p>
+
+  <section class="persona reveal" data-panel="treasurer">
+    <div class="card"><div class="avatar">🏢</div><h3>Amira, Group Treasurer</h3><p>Moves liquidity across 14 entities. Wants certainty, visibility and fewer cut-off times.</p><ul><li>Cash positioning in real time</li><li>Payroll on weekends and holidays</li><li>Audit-ready confirmations</li></ul></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="moments">
+        <div class="card"><div class="icon">⏱</div><h3>24/7 liquidity</h3><p>Sweep funds between entities at 23:00 on a Sunday, settled instantly.</p></div>
+        <div class="card"><div class="icon">📊</div><h3>Live position</h3><p>Every inbound payment updates the group cash dashboard as it lands.</p></div>
+        <div class="card"><div class="icon">✓</div><h3>Certainty</h3><p>Irrevocable settlement removes the “has it arrived?” phone call.</p></div>
+      </div>
+      <div class="card"><p class="small">Headline for this audience</p><h2 style="font-size:26px">Cash that works <em>every hour</em> of the week.</h2></div>
+    </div>
+  </section>
+
+  <section class="persona" data-panel="smb" hidden>
+    <div class="card"><div class="avatar">🛠</div><h3>Leo, owns a joinery</h3><p>Eight staff, tight margins. Waits days for invoices to clear and chases late payers by phone.</p><ul><li>Get paid on completion</li><li>Know who has paid</li><li>Pay suppliers without batches</li></ul></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="moments">
+        <div class="card"><div class="icon">📲</div><h3>Request to pay</h3><p>Send a payment request from the job site; the customer approves in their app.</p></div>
+        <div class="card"><div class="icon">💷</div><h3>Instant cash flow</h3><p>Funds are available the moment the customer approves — not in three days.</p></div>
+        <div class="card"><div class="icon">🔔</div><h3>Auto-reconciled</h3><p>Rich remittance data matches each payment to its invoice automatically.</p></div>
+      </div>
+      <div class="card"><p class="small">Headline for this audience</p><h2 style="font-size:26px">Finish the job. <em>Get paid</em> before you leave.</h2></div>
+    </div>
+  </section>
+
+  <section class="persona" data-panel="consumer" hidden>
+    <div class="card"><div class="avatar">🙂</div><h3>Priya, splitting a bill</h3><p>Expects money to move as fast as a message. Notices every second of friction.</p><ul><li>Pay by phone number</li><li>See the money arrive</li><li>Feel safe doing it</li></ul></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="moments">
+        <div class="card"><div class="icon">⚡</div><h3>Instant</h3><p>Money leaves and lands in seconds, day or night.</p></div>
+        <div class="card"><div class="icon">🛡</div><h3>Confirmation of payee</h3><p>The name check stops mistakes and scams before they happen.</p></div>
+        <div class="card"><div class="icon">💬</div><h3>In the moment</h3><p>Notifications on both phones close the loop for everyone at the table.</p></div>
+      </div>
+      <div class="card"><p class="small">Headline for this audience</p><h2 style="font-size:26px">As fast as a message. <em>As safe</em> as a bank.</h2></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

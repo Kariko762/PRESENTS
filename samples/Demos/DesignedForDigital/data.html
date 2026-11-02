@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Data you can touch</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .lab { display: grid; grid-template-columns: 300px 1fr; gap: 18px; flex: 1; min-height: 0; }
+  .controls { display: flex; flex-direction: column; gap: 18px; }
+  .controls label { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; }
+  .controls output { color: var(--text); font-size: 20px; font-weight: 700; }
+  .chart { position: relative; padding: 18px; display: flex; flex-direction: column; min-height: 280px; }
+  .chart canvas { flex: 1; width: 100%; min-height: 200px; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .kpis .card { padding: 14px 18px; }
+</style>
+</head>
+<body data-demo="Designed for Digital" data-chapter="Data you can touch" data-page="3" data-pages="6">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <p class="eyebrow reveal">Capability 2 · Interaction</p>
+  <h2 class="reveal">Data you can <em>touch</em>. Let the customer ask “what if?”</h2>
+  <div class="lab reveal">
+    <div class="card controls">
+      <label>Daily instant payments<output id="volumeOut">1.2M</output><input id="volume" type="range" min="100000" max="5000000" step="100000" value="1200000" data-fis-value="dailyPayments"></label>
+      <div><p class="small" style="margin-bottom:8px">Routing strategy</p>
+        <div class="segmented" role="group"><button id="standard" aria-pressed="false">Standard</button><button id="smart" aria-pressed="true">Smart routing</button></div></div>
+      <div><p class="small" style="margin-bottom:8px">Peak profile</p>
+        <div class="segmented" role="group"><button data-peak="retail" aria-pressed="true">Retail</button><button data-peak="payroll" aria-pressed="false">Payroll</button></div></div>
+      <p class="callout small">Modelled for <b data-fis-field="institution">an illustrative institution</b>. Every number on this page is generated from the controls — no screenshots, no re-cut slides.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;min-height:0">
+      <div class="kpis">
+        <div class="card"><p class="small">Straight-through rate</p><div class="kpi"><span id="stp" data-decimals="1">0</span><small>%</small></div></div>
+        <div class="card"><p class="small">Median latency</p><div class="kpi"><span id="latency">0</span><small>ms</small></div></div>
+        <div class="card"><p class="small">Exceptions per day</p><div class="kpi"><span id="exceptions">0</span></div></div>
+      </div>
+      <div class="card chart"><p class="small">Hourly volume · illustrative model</p><canvas id="chart"></canvas></div>
+    </div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const volume = document.getElementById('volume');
+  const canvas = document.getElementById('chart'), ctx = canvas.getContext('2d');
+  let smart = true, peak = FISDeck.data('peakProfile', 'retail') === 'payroll' ? 'payroll' : 'retail', bars = new Array(24).fill(0), target = new Array(24).fill(0);
+  const shape = { retail: h => .25 + Math.exp(-((h - 12.5) ** 2) / 10) + .8 * Math.exp(-((h - 18.5) ** 2) / 6),
+                  payroll: h => .2 + 1.6 * Math.exp(-((h - 9) ** 2) / 3) + .3 * Math.exp(-((h - 15) ** 2) / 8) };
+  function compute() {
+    const v = Number(volume.value);
+    document.getElementById('volumeOut').textContent = v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : Math.round(v / 1000) + 'K';
+    const raw = Array.from({ length: 24 }, (_, h) => shape[peak](h));
+    const sum = raw.reduce((a, b) => a + b, 0);
+    target = raw.map(r => r / sum * v);
+    const load = Math.max(...target) / 260000;
+    const stp = smart ? 99.6 - load * .4 : 98.1 - load * 1.6;
+    const latency = Math.round((smart ? 210 : 340) + load * (smart ? 60 : 240));
+    FISDeck.count(document.getElementById('stp'), Math.max(90, stp));
+    FISDeck.count(document.getElementById('latency'), latency);
+    FISDeck.count(document.getElementById('exceptions'), Math.round(v * (100 - Math.max(90, stp)) / 100));
+  }
+  function resize() { const r = canvas.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); canvas.width = r.width * d; canvas.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
+  new ResizeObserver(resize).observe(canvas);
+  function draw() {
+    requestAnimationFrame(draw);
+    const w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return;
+    ctx.clearRect(0, 0, w, h);
+    const max = Math.max(...target, 1) * 1.15, gap = 6, bw = (w - 40) / 24 - gap;
+    ctx.strokeStyle = '#2a3b4a'; ctx.fillStyle = '#6f8190'; ctx.font = '11px Segoe UI';
+    for (let g = 0; g <= 4; g++) { const y = h - 22 - (h - 34) * g / 4; ctx.beginPath(); ctx.moveTo(34, y); ctx.lineTo(w, y); ctx.stroke(); }
+    for (let i = 0; i < 24; i++) {
+      bars[i] += (target[i] - bars[i]) * .12;
+      const bh = (h - 34) * bars[i] / max, x = 40 + i * (bw + gap), y = h - 22 - bh;
+      const grad = ctx.createLinearGradient(0, y, 0, h - 22); grad.addColorStop(0, smart ? '#69e43c' : '#43cebd'); grad.addColorStop(1, 'rgba(75,205,62,.15)');
+      ctx.fillStyle = grad; ctx.beginPath(); ctx.roundRect(x, y, bw, bh, 4); ctx.fill();
+      if (i % 3 === 0) { ctx.fillStyle = '#6f8190'; ctx.fillText(String(i).padStart(2, '0') + ':00', x - 4, h - 6); }
+    }
+  }
+  volume.addEventListener('input', compute);
+  for (const [id, value] of [['standard', false], ['smart', true]]) document.getElementById(id).addEventListener('click', () => {
+    smart = value; document.getElementById('standard').setAttribute('aria-pressed', String(!value)); document.getElementById('smart').setAttribute('aria-pressed', String(value)); compute(); });
+  document.querySelectorAll('[data-peak]').forEach(b => b.addEventListener('click', () => {
+    peak = b.dataset.peak; document.querySelectorAll('[data-peak]').forEach(o => o.setAttribute('aria-pressed', String(o === b))); compute(); }));
+  document.querySelectorAll('[data-peak]').forEach(o => o.setAttribute('aria-pressed', String(o.dataset.peak === peak)));
+  compute(); draw();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "id": "fis-template-demo",
+  "name": "Template Demo",
+  "description": "Starter demo. Copy this folder, rename the id, name and pages, then replace the data sets with your own.",
+  "version": "1.0.0",
+  "entryPoint": "index.html",
+  "branding": {
+    "accentColor": "#4BCD3E",
+    "logo": "shared/fis-logo.png",
+    "tileTheme": "green"
+  },
+  "catalog": {
+    "product": "Your L8 solution",
+    "functions": [
+      "Your business function"
+    ],
+    "tags": [
+      "Template"
+    ],
+    "coverImage": "",
+    "organization": {
+      "l3": "Payments",
+      "l4": "Your L4",
+      "l5": "Your L5",
+      "l6": "Your L6",
+      "l7": "Your L7",
+      "l8": "Your L8 solution"
+    }
+  },
+  "navigation": {
+    "enabled": true,
+    "sections": [
+      {
+        "id": "story",
+        "title": "Template Demo",
+        "pages": [
+          { "id": "opening", "title": "Opening", "path": "index.html" },
+          { "id": "numbers", "title": "Key numbers", "path": "numbers.html" },
+          { "id": "summary", "title": "Summary", "path": "summary.html" }
+        ]
+      }
+    ]
+  },
+  "dataSets": [
+    {
+      "id": "base",
+      "name": "Base client",
+      "persona": "Head of Operations",
+      "description": "Complete base data set. Every field the pages read is defined here.",
+      "file": "data/base.json",
+      "default": true
+    },
+    {
+      "id": "example-client",
+      "name": "Example client (override)",
+      "persona": "Chief Operating Officer",
+      "description": "Extends the base set and changes only the client, currency and two KPIs.",
+      "file": "data/example-client.json"
+    }
+  ]
+}

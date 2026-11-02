@@ -1,0 +1,9 @@
+{
+  "persona": "Head of Retail Banking",
+  "institution": "a community bank",
+  "team": {
+    "consultants": 12,
+    "demosPerMonth": 6,
+    "prepHours": 4
+  }
+}

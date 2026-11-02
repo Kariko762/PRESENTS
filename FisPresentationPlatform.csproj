@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\fis-presents.ico</ApplicationIcon>
+    <Product>FIS Presentation Studio</Product>
+    <Company>FIS</Company>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="1.9.0" />
+    <PackageReference Include="JsonSchema.Net" Version="9.6.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="samples\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Remove="tests\**\*.cs" />
+    <Compile Remove="tools\**\*.cs" />
+    <EmbeddedResource Include="documentation\Configuration\presentation.schema.json" LogicalName="FIS.presentation.schema.json" />
+    <Resource Include="Assets\fis-logo.png" />
+    <Resource Include="Assets\fis-presents.ico" />
+    <Resource Include="green-building-banner.png" />
+    <Resource Include="green-dots-and-swish.png" />
+    <EmbeddedResource Include="Assets\welcome-sample.json" LogicalName="FIS.welcome.sample.json" />
+  </ItemGroup>
+
+</Project>

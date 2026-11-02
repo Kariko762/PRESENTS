@@ -1,0 +1,9 @@
+{
+  "persona": "Head of Sales Enablement",
+  "institution": "a tier-1 universal bank",
+  "team": {
+    "consultants": 120,
+    "demosPerMonth": 8,
+    "prepHours": 3
+  }
+}

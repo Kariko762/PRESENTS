@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rehearse</title>
+<link rel="stylesheet" href="shared/brand.css">
+<script src="shared/version.js"></script>
+<script defer src="shared/deck.js"></script>
+<style>
+  .layout { display: grid; grid-template-columns: 240px 1fr; gap: 18px; flex: 1; }
+  .beats button { display: block; width: 100%; text-align: left; margin-bottom: 8px; }
+  .script { display: flex; flex-direction: column; gap: 14px; }
+  .say { font-size: 22px; line-height: 1.5; border-left: 4px solid var(--accent); padding: 6px 0 6px 18px; animation: rise .45s var(--ease) both; }
+  .grid-2 .card { animation: rise .45s .1s var(--ease) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .timer { font: 700 28px "Segoe UI", sans-serif; color: var(--accent); }
+</style>
+</head>
+<body data-demo="Confident, Repeatable Delivery" data-chapter="Rehearse" data-page="3" data-pages="6" data-accent="lime">
+<main class="stage">
+  <canvas class="backdrop"></canvas>
+  <div class="row" style="justify-content:space-between">
+    <div><p class="eyebrow reveal">Step 2 · Rehearse</p><h2 class="reveal">The talk track is <em>part of the demo.</em></h2></div>
+    <div class="reveal" style="text-align:right"><p class="small">Suggested pace</p><div class="timer" id="time">0:45</div></div>
+  </div>
+  <div class="layout">
+    <div class="card beats reveal" id="beats"></div>
+    <div class="card script reveal" id="script"></div>
+  </div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const beats = [
+    { t: '1 · Open', time: '0:45', say: '“Every trade you execute starts a chain of events your clients never see — until something breaks.”', why: 'Anchor on risk, not technology.', ask: 'How many breaks did you resolve manually last quarter?' },
+    { t: '2 · Show', time: '2:00', say: '“Let me show you one trade, end to end, as it moves through capture, enrichment, clearing and settlement.”', why: 'Move to the live lifecycle on the next page.', ask: 'Where does your team spend the most time today?' },
+    { t: '3 · Prove', time: '1:30', say: '“Exceptions surface the moment they happen, with the fix suggested — not at end of day.”', why: 'Pause on the exception step; let them react.', ask: 'What would same-day visibility change for you?' },
+    { t: '4 · Close', time: '0:45', say: '“That is T+1 ready, with fewer people chasing fewer breaks.”', why: 'Link back to their answer from beat 1.', ask: 'Who else should see this before we scope a pilot?' }
+  ];
+  const list = document.getElementById('beats'), script = document.getElementById('script'), time = document.getElementById('time');
+  function show(i) {
+    const b = beats[i]; time.textContent = b.time;
+    list.querySelectorAll('button').forEach((x, j) => x.setAttribute('aria-pressed', String(i === j)));
+    script.innerHTML = `<p class="eyebrow">Say</p><div class="say">${b.say}</div><div class="grid-2"><div class="card"><p class="eyebrow">Why</p><p>${b.why}</p></div><div class="card"><p class="eyebrow">Ask</p><p>${b.ask}</p></div></div>`;
+  }
+  beats.forEach((b, i) => { const btn = document.createElement('button'); btn.textContent = b.t; btn.addEventListener('click', () => show(i)); list.appendChild(btn); });
+  show(0);
+});
+</script>
+</body>
+</html>
